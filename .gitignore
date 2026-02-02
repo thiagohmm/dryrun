@@ -1,0 +1,59 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.tfvars
+!terraform.tfvars.example
+
+# Scala/SBT
+target/
+project/target/
+project/project/
+.bsp/
+.metals/
+.vscode/
+*.class
+*.log
+*.jar
+!lib/*.jar
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+
+# IDE
+.idea/
+*.iml
+*.iws
+.DS_Store
+*.swp
+*.swo
+*~
+
+# AWS
+.aws/
+credentials
+
+# Generated data
+data-generation/output/
+sample-data/generated/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
