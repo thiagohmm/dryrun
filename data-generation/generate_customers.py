@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Generate customer registration data and upload to DynamoDB
+Gera dados de cadastro de clientes e envia para o DynamoDB
 
-This script generates realistic customer data with the following schema:
-- numero_unico_conta: UUID (Primary Key)
-- nome_titular_conta: Full name
-- data_nascimento_titular_conta: Birth date (ISO format)
-- zip-code: Brazilian ZIP code format (12345-678)
-- data_criacao_registro: Account creation date
+Este script gera dados realistas de clientes com o seguinte esquema:
+- numero_unico_conta: UUID (chave primária)
+- nome_titular_conta: Nome completo
+- data_nascimento_titular_conta: Data de nascimento (formato ISO)
+- zip-code: Formato de CEP brasileiro (12345-678)
+- data_criacao_registro: Data de criação da conta
 """
 
 import json
@@ -18,12 +18,12 @@ import boto3
 from faker import Faker
 from botocore.exceptions import ClientError
 
-# Initialize Faker with Brazilian locale
+# Inicializa Faker com locale brasileiro
 fake = Faker('pt_BR')
 
 
 def load_config() -> Dict:
-    """Load configuration from config.json"""
+    """Carrega a configuração do config.json"""
     try:
         with open('config.json', 'r') as f:
             return json.load(f)
@@ -38,31 +38,31 @@ def load_config() -> Dict:
 
 def generate_customer_data(num_customers: int) -> List[Dict]:
     """
-    Generate customer registration data
+    Gera dados de cadastro de clientes.
 
     Args:
-        num_customers: Number of customer records to generate
+        num_customers: Número de registros de clientes a gerar.
 
     Returns:
-        List of customer dictionaries
+        Lista de dicionários de clientes.
     """
     customers = []
 
     print(f"Generating {num_customers} customer records...")
 
     for i in range(num_customers):
-        # Generate birth date (18-80 years old)
+        # Gera data de nascimento (entre 18 e 80 anos)
         birth_date = fake.date_of_birth(minimum_age=18, maximum_age=80)
 
-        # Generate account creation date (within last 5 years)
-        days_ago = fake.random_int(min=1, max=1825)  # 5 years
+        # Gera data de criação da conta (nos últimos 5 anos)
+        days_ago = fake.random_int(min=1, max=1825)  # 5 anos
         creation_date = datetime.now() - timedelta(days=days_ago)
 
         customer = {
             'numero_unico_conta': str(uuid.uuid4()),
             'nome_titular_conta': fake.name(),
             'data_nascimento_titular_conta': birth_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            'zip-code': fake.postcode(),  # Brazilian format: 12345-678
+            'zip-code': fake.postcode(),  # Formato brasileiro: 12345-678
             'data_criacao_registro': creation_date.strftime('%Y-%m-%d')
         }
 
@@ -76,7 +76,7 @@ def generate_customer_data(num_customers: int) -> List[Dict]:
 
 
 def save_customers_locally(customers: List[Dict], filename: str = 'output/customers.json'):
-    """Save customers to local JSON file for reference"""
+    """Salva os clientes em arquivo JSON local para referência"""
     import os
 
     os.makedirs('output', exist_ok=True)
@@ -89,19 +89,19 @@ def save_customers_locally(customers: List[Dict], filename: str = 'output/custom
 
 def upload_to_dynamodb(customers: List[Dict], table_name: str, region: str):
     """
-    Upload customer data to DynamoDB using batch write
+    Envia dados de clientes para o DynamoDB usando escrita em lote.
 
     Args:
-        customers: List of customer dictionaries
-        table_name: DynamoDB table name
-        region: AWS region
+        customers: Lista de dicionários de clientes
+        table_name: Nome da tabela DynamoDB
+        region: Região AWS
     """
     print(f"\nUploading to DynamoDB table: {table_name}")
 
     dynamodb = boto3.resource('dynamodb', region_name=region)
     table = dynamodb.Table(table_name)
 
-    # Batch write items (max 25 items per batch)
+    # Escrita em lote (máximo 25 itens por lote)
     batch_size = 25
     total_uploaded = 0
 
@@ -129,7 +129,7 @@ def upload_to_dynamodb(customers: List[Dict], table_name: str, region: str):
 
 
 def verify_upload(table_name: str, region: str, expected_count: int):
-    """Verify that data was uploaded correctly"""
+    """Verifica se os dados foram enviados corretamente"""
     print(f"\nVerifying upload...")
 
     dynamodb = boto3.resource('dynamodb', region_name=region)
@@ -152,12 +152,12 @@ def verify_upload(table_name: str, region: str, expected_count: int):
 
 
 def main():
-    """Main execution function"""
+    """Função principal de execução"""
     print("=" * 60)
     print("Customer Data Generator for DynamoDB")
     print("=" * 60)
 
-    # Load configuration
+    # Carrega a configuração
     config = load_config()
     num_customers = config.get('num_customers', 25)
     table_name = config.get('dynamodb_table', 'customer-registration-dev')
@@ -169,24 +169,24 @@ def main():
     print(f"  AWS region: {region}")
     print()
 
-    # Generate customer data
+    # Gera dados de clientes
     customers = generate_customer_data(num_customers)
 
-    # Save locally for reference
+    # Salva localmente para referência
     save_customers_locally(customers)
 
-    # Upload to DynamoDB
+    # Envia para o DynamoDB
     upload_to_dynamodb(customers, table_name, region)
 
-    # Verify upload
+    # Verifica o envio
     verify_upload(table_name, region, num_customers)
 
     print("\n" + "=" * 60)
     print("Customer data generation completed!")
     print("=" * 60)
 
-    # Display sample customer
-    print("\nSample customer record:")
+    # Exibe um cliente de exemplo
+    print("\nRegistro de cliente de exemplo:")
     print(json.dumps(customers[0], indent=2, ensure_ascii=False))
 
 

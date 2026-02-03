@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Generate financial transaction data and upload to S3
+Gera dados de transações financeiras e envia para o S3
 
-This script generates realistic transaction data with the following schema:
-- codigo_lancamento: UUID (unique transaction ID)
-- numero_unico_conta: UUID (account ID from customer data)
-- valor_total_transacao: Decimal (transaction amount)
-- data_completa_transacao: ISO datetime
-- tipo_transacao: DEBITO or CREDITO
-- tipo_produto_transacao: PIX, TED, or CARTAO
+Este script gera dados realistas de transações com o seguinte esquema:
+- codigo_lancamento: UUID (ID único da transação)
+- numero_unico_conta: UUID (ID da conta dos dados de clientes)
+- valor_total_transacao: Decimal (valor da transação)
+- data_completa_transacao: data/hora ISO
+- tipo_transacao: DEBITO ou CREDITO
+- tipo_produto_transacao: PIX, TED ou CARTAO
 
-Data is partitioned by year/month/day in S3
+Os dados são particionados por ano/mês/dia no S3
 """
 
 import json
@@ -24,7 +24,7 @@ from botocore.exceptions import ClientError
 
 
 def load_config() -> Dict:
-    """Load configuration from config.json"""
+    """Carrega a configuração do config.json"""
     try:
         with open('config.json', 'r') as f:
             return json.load(f)
@@ -42,8 +42,8 @@ def load_config() -> Dict:
 
 def load_customer_accounts() -> List[str]:
     """
-    Load customer account IDs from locally saved file
-    If not available, generate sample account IDs
+    Carrega IDs de contas de clientes do arquivo salvo localmente.
+    Se não disponível, gera IDs de conta de exemplo.
     """
     try:
         with open('output/customers.json', 'r') as f:
@@ -53,7 +53,7 @@ def load_customer_accounts() -> List[str]:
             return account_ids
     except FileNotFoundError:
         print("⚠ Warning: customers.json not found. Generating sample account IDs.")
-        # Generate 25 sample account IDs
+        # Gera 25 IDs de conta de exemplo
         return [str(uuid.uuid4()) for _ in range(25)]
 
 
@@ -62,20 +62,20 @@ def generate_transaction(
     transaction_date: datetime
 ) -> Dict:
     """
-    Generate a single transaction
+    Gera uma única transação.
 
     Args:
-        account_ids: List of valid account IDs
-        transaction_date: Date/time for the transaction
+        account_ids: Lista de IDs de conta válidos
+        transaction_date: Data/hora da transação
 
     Returns:
-        Transaction dictionary
+        Dicionário da transação
     """
-    # Transaction types and products
+    # Tipos de transação e produtos
     transaction_types = ['DEBITO', 'CREDITO']
     product_types = ['PIX', 'TED', 'CARTAO']
 
-    # Generate transaction amount (R$ 10.00 to R$ 5000.00)
+    # Gera valor da transação (R$ 10,00 a R$ 5000,00)
     amount = round(random.uniform(10.0, 5000.0), 2)
 
     transaction = {
@@ -97,16 +97,16 @@ def generate_transactions(
     end_date: str
 ) -> Dict[str, List[Dict]]:
     """
-    Generate transactions distributed across date range
+    Gera transações distribuídas no intervalo de datas.
 
     Args:
-        num_transactions: Total number of transactions to generate
-        account_ids: List of valid account IDs
-        start_date: Start date (YYYY-MM-DD)
-        end_date: End date (YYYY-MM-DD)
+        num_transactions: Número total de transações a gerar
+        account_ids: Lista de IDs de conta válidos
+        start_date: Data inicial (AAAA-MM-DD)
+        end_date: Data final (AAAA-MM-DD)
 
     Returns:
-        Dictionary mapping partition keys to transaction lists
+        Dicionário mapeando chaves de partição às listas de transações
     """
     print(f"Generating {num_transactions} transactions...")
 
@@ -114,23 +114,23 @@ def generate_transactions(
     end = datetime.strptime(end_date, '%Y-%m-%d')
     date_range = (end - start).days + 1
 
-    # Group transactions by partition (year/month/day)
+    # Agrupa transações por partição (ano/mês/dia)
     partitioned_transactions = {}
 
     for i in range(num_transactions):
-        # Random date within range
+        # Data aleatória dentro do intervalo
         random_days = random.randint(0, date_range - 1)
         transaction_date = start + timedelta(days=random_days)
 
-        # Random time during the day
-        random_seconds = random.randint(0, 86399)  # 0 to 23:59:59
+        # Horário aleatório durante o dia
+        random_seconds = random.randint(0, 86399)  # 0 a 23:59:59
         transaction_datetime = transaction_date + \
             timedelta(seconds=random_seconds)
 
-        # Generate transaction
+        # Gera a transação
         transaction = generate_transaction(account_ids, transaction_datetime)
 
-        # Create partition key
+        # Cria a chave de partição
         partition_key = (
             f"year={transaction_datetime.year}/"
             f"month={transaction_datetime.month:02d}/"
@@ -152,13 +152,13 @@ def generate_transactions(
 
 
 def save_transactions_locally(partitioned_transactions: Dict[str, List[Dict]]):
-    """Save transactions to local files for reference"""
+    """Salva as transações em arquivos locais para referência"""
     import os
 
     os.makedirs('output/transactions', exist_ok=True)
 
     for partition_key, transactions in partitioned_transactions.items():
-        # Create safe filename from partition key
+        # Cria nome de arquivo seguro a partir da chave de partição
         filename = partition_key.replace('/', '_') + '.json'
         filepath = f'output/transactions/{filename}'
 
@@ -175,13 +175,13 @@ def upload_to_s3(
     region: str
 ):
     """
-    Upload transactions to S3 with partitioning
+    Envia transações para o S3 com particionamento.
 
     Args:
-        partitioned_transactions: Dictionary of partition -> transactions
-        bucket_name: S3 bucket name
-        prefix: S3 key prefix
-        region: AWS region
+        partitioned_transactions: Dicionário partição -> transações
+        bucket_name: Nome do bucket S3
+        prefix: Prefixo da chave S3
+        region: Região AWS
     """
     print(f"\nUploading to S3 bucket: {bucket_name}")
 
@@ -191,13 +191,13 @@ def upload_to_s3(
 
     try:
         for partition_key, transactions in partitioned_transactions.items():
-            # Create S3 key with partition
+            # Cria chave S3 com a partição
             s3_key = f"{prefix}/{partition_key}/transactions_{uuid.uuid4().hex[:8]}.json"
 
-            # Convert to JSON
+            # Converte para JSON
             json_data = json.dumps(transactions, indent=2, ensure_ascii=False)
 
-            # Upload to S3
+            # Envia para o S3
             s3_client.put_object(
                 Bucket=bucket_name,
                 Key=s3_key,
@@ -219,7 +219,7 @@ def upload_to_s3(
 
 
 def verify_upload(bucket_name: str, prefix: str, region: str):
-    """Verify that data was uploaded correctly"""
+    """Verifica se os dados foram enviados corretamente"""
     print(f"\nVerifying upload...")
 
     s3_client = boto3.client('s3', region_name=region)
@@ -245,7 +245,7 @@ def verify_upload(bucket_name: str, prefix: str, region: str):
 
 
 def display_statistics(partitioned_transactions: Dict[str, List[Dict]]):
-    """Display statistics about generated transactions"""
+    """Exibe estatísticas sobre as transações geradas"""
     print("\n" + "=" * 60)
     print("Transaction Statistics")
     print("=" * 60)
@@ -253,7 +253,7 @@ def display_statistics(partitioned_transactions: Dict[str, List[Dict]]):
     total_transactions = sum(len(txns)
                              for txns in partitioned_transactions.values())
 
-    # Count by type
+    # Contagem por tipo
     type_counts = {'DEBITO': 0, 'CREDITO': 0}
     product_counts = {'PIX': 0, 'TED': 0, 'CARTAO': 0}
     total_value = 0.0
@@ -285,12 +285,12 @@ def display_statistics(partitioned_transactions: Dict[str, List[Dict]]):
 
 
 def main():
-    """Main execution function"""
+    """Função principal de execução"""
     print("=" * 60)
     print("Transaction Data Generator for S3")
     print("=" * 60)
 
-    # Load configuration
+    # Carrega a configuração
     config = load_config()
     num_transactions = config.get('num_transactions', 1200)
     start_date = config.get('start_date', '2024-01-01')
@@ -307,10 +307,10 @@ def main():
     print(f"  AWS region: {region}")
     print()
 
-    # Load customer account IDs
+    # Carrega IDs de contas de clientes
     account_ids = load_customer_accounts()
 
-    # Generate transactions
+    # Gera transações
     partitioned_transactions = generate_transactions(
         num_transactions,
         account_ids,
@@ -318,23 +318,23 @@ def main():
         end_date
     )
 
-    # Save locally for reference
+    # Salva localmente para referência
     save_transactions_locally(partitioned_transactions)
 
-    # Upload to S3
+    # Envia para o S3
     upload_to_s3(partitioned_transactions, bucket_name, prefix, region)
 
-    # Verify upload
+    # Verifica o envio
     verify_upload(bucket_name, prefix, region)
 
-    # Display statistics
+    # Exibe estatísticas
     display_statistics(partitioned_transactions)
 
     print("\n" + "=" * 60)
     print("Transaction data generation completed!")
     print("=" * 60)
 
-    # Display sample transaction
+    # Exibe transação de exemplo
     sample_partition = list(partitioned_transactions.keys())[0]
     sample_transaction = partitioned_transactions[sample_partition][0]
     print(f"\nSample transaction from {sample_partition}:")

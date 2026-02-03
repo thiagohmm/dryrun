@@ -1,4 +1,4 @@
-# S3 Bucket for Transaction Data
+# Bucket S3 para dados de transações
 resource "aws_s3_bucket" "transactions" {
   bucket = var.s3_transactions_bucket_name
 
@@ -6,12 +6,12 @@ resource "aws_s3_bucket" "transactions" {
     local.common_tags,
     {
       Name    = "${var.project_name}-transactions-${var.environment}"
-      Purpose = "Store financial transaction data"
+      Purpose = "Armazenar dados de transações financeiras"
     }
   )
 }
 
-# Enable versioning for transactions bucket
+# Habilita versionamento no bucket de transações
 resource "aws_s3_bucket_versioning" "transactions" {
   bucket = aws_s3_bucket.transactions.id
 
@@ -20,7 +20,7 @@ resource "aws_s3_bucket_versioning" "transactions" {
   }
 }
 
-# Enable server-side encryption for transactions bucket
+# Habilita criptografia no servidor no bucket de transações
 resource "aws_s3_bucket_server_side_encryption_configuration" "transactions" {
   bucket = aws_s3_bucket.transactions.id
 
@@ -31,7 +31,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "transactions" {
   }
 }
 
-# Block public access for transactions bucket
+# Bloqueia acesso público ao bucket de transações
 resource "aws_s3_bucket_public_access_block" "transactions" {
   bucket = aws_s3_bucket.transactions.id
 
@@ -63,7 +63,7 @@ resource "aws_s3_bucket_versioning" "glue_scripts" {
   }
 }
 
-# Enable server-side encryption for Glue scripts bucket
+# Habilita criptografia no servidor no bucket de scripts do Glue
 resource "aws_s3_bucket_server_side_encryption_configuration" "glue_scripts" {
   bucket = aws_s3_bucket.glue_scripts.id
 
@@ -84,7 +84,7 @@ resource "aws_s3_bucket_public_access_block" "glue_scripts" {
   restrict_public_buckets = true
 }
 
-# Lifecycle policy for transactions bucket (optional - archive old data)
+# Política de ciclo de vida do bucket de transações (opcional - arquiva dados antigos)
 resource "aws_s3_bucket_lifecycle_configuration" "transactions" {
   bucket = aws_s3_bucket.transactions.id
 

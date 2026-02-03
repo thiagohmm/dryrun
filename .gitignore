@@ -46,7 +46,7 @@ pip-delete-this-directory.txt
 .aws/
 credentials
 
-# Generated data
+# Dados gerados
 data-generation/output/
 sample-data/generated/
 
@@ -54,6 +54,6 @@ sample-data/generated/
 *.log
 logs/
 
-# OS
+# SO
 .DS_Store
 Thumbs.db

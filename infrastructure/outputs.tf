@@ -1,96 +1,96 @@
-# S3 Outputs
+# Outputs S3
 output "s3_transactions_bucket" {
-  description = "S3 bucket name for transaction data"
+  description = "Nome do bucket S3 para dados de transações"
   value       = aws_s3_bucket.transactions.id
 }
 
 output "s3_transactions_bucket_arn" {
-  description = "S3 bucket ARN for transaction data"
+  description = "ARN do bucket S3 para dados de transações"
   value       = aws_s3_bucket.transactions.arn
 }
 
 output "glue_scripts_bucket" {
-  description = "S3 bucket name for Glue scripts"
+  description = "Nome do bucket S3 para scripts do Glue"
   value       = aws_s3_bucket.glue_scripts.id
 }
 
 output "glue_scripts_bucket_arn" {
-  description = "S3 bucket ARN for Glue scripts"
+  description = "ARN do bucket S3 para scripts do Glue"
   value       = aws_s3_bucket.glue_scripts.arn
 }
 
-# DynamoDB Outputs
+# Outputs DynamoDB
 output "dynamodb_table_name" {
-  description = "DynamoDB table name for customer data"
+  description = "Nome da tabela DynamoDB para dados de clientes"
   value       = aws_dynamodb_table.customer_registration.name
 }
 
 output "dynamodb_table_arn" {
-  description = "DynamoDB table ARN"
+  description = "ARN da tabela DynamoDB"
   value       = aws_dynamodb_table.customer_registration.arn
 }
 
-# OpenSearch Outputs
+# Outputs OpenSearch
 output "opensearch_domain_name" {
-  description = "OpenSearch domain name"
+  description = "Nome do domínio OpenSearch"
   value       = aws_opensearch_domain.financial_transactions.domain_name
 }
 
 output "opensearch_endpoint" {
-  description = "OpenSearch domain endpoint"
+  description = "Endpoint do domínio OpenSearch"
   value       = aws_opensearch_domain.financial_transactions.endpoint
 }
 
 output "opensearch_domain_id" {
-  description = "OpenSearch domain ID"
+  description = "ID do domínio OpenSearch"
   value       = aws_opensearch_domain.financial_transactions.domain_id
 }
 
 output "opensearch_arn" {
-  description = "OpenSearch domain ARN"
+  description = "ARN do domínio OpenSearch"
   value       = aws_opensearch_domain.financial_transactions.arn
 }
 
 output "opensearch_kibana_endpoint" {
-  description = "OpenSearch Dashboards endpoint"
+  description = "Endpoint do OpenSearch Dashboards"
   value       = aws_opensearch_domain.financial_transactions.dashboard_endpoint
 }
 
-# Glue Outputs
+# Outputs Glue
 output "glue_job_name" {
-  description = "Glue job name"
+  description = "Nome do job Glue"
   value       = aws_glue_job.financial_transaction_processor.name
 }
 
 output "glue_job_arn" {
-  description = "Glue job ARN"
+  description = "ARN do job Glue"
   value       = aws_glue_job.financial_transaction_processor.arn
 }
 
 output "glue_role_arn" {
-  description = "Glue job IAM role ARN"
+  description = "ARN do papel IAM do job Glue"
   value       = aws_iam_role.glue_job.arn
 }
 
 output "glue_catalog_database" {
-  description = "Glue catalog database name"
+  description = "Nome do banco de dados do catálogo Glue"
   value       = aws_glue_catalog_database.financial_data.name
 }
 
-# General Outputs
+# Outputs gerais
 output "aws_region" {
-  description = "AWS region"
+  description = "Região AWS"
   value       = local.region
 }
 
 output "account_id" {
-  description = "AWS account ID"
+  description = "ID da conta AWS"
   value       = local.account_id
 }
 
-# Quick Start Commands
+# Comandos de início rápido
 output "quick_start_commands" {
-  description = "Quick start commands for using the infrastructure"
+  description = "Comandos de início rápido para usar a infraestrutura"
   value       = <<-EOT
     # Upload Glue Job JAR
     aws s3 cp glue-job/target/scala-2.12/financial-transaction-processor_2.12-1.0.jar s3://${aws_s3_bucket.glue_scripts.id}/scripts/
@@ -110,9 +110,9 @@ output "quick_start_commands" {
   EOT
 }
 
-# Connection strings for data generation scripts
+# Strings de conexão para scripts de geração de dados
 output "data_generation_config" {
-  description = "Configuration for data generation scripts"
+  description = "Configuração para scripts de geração de dados"
   value = {
     aws_region          = local.region
     s3_bucket           = aws_s3_bucket.transactions.id

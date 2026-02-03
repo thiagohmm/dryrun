@@ -1,105 +1,105 @@
-# AWS Glue Batch Processing Pipeline - Project Summary
+# Pipeline de processamento em lote AWS Glue – Resumo do projeto
 
-## Overview
+## Visão geral
 
-This project implements a complete AWS-based batch processing pipeline for financial transactions, meeting all specified requirements for the technical assessment.
+Este projeto implementa um pipeline completo de processamento em lote para transações financeiras baseado na AWS, atendendo a todos os requisitos especificados na avaliação técnica.
 
-## Project Statistics
+## Estatísticas do projeto
 
-- **Total Files Created**: 27
-- **Programming Languages**: Scala, Python, HCL (Terraform), Markdown
-- **AWS Services Used**: S3, DynamoDB, OpenSearch, Glue, IAM, CloudWatch
-- **Infrastructure**: 100% Infrastructure as Code (Terraform)
+- **Total de arquivos criados**: 27
+- **Linguagens de programação**: Scala, Python, HCL (Terraform), Markdown
+- **Serviços AWS utilizados**: S3, DynamoDB, OpenSearch, Glue, IAM, CloudWatch
+- **Infraestrutura**: 100% infraestrutura como código (Terraform)
 
-## Architecture Summary
+## Resumo da arquitetura
 
 ```
-S3 (JSON, Partitioned) → AWS Glue Job (Scala) → DynamoDB (Batch-Get) → OpenSearch (camelCase)
+S3 (JSON, particionado) → Job AWS Glue (Scala) → DynamoDB (Batch-Get) → OpenSearch (camelCase)
 ```
 
-### Data Flow
+### Fluxo de dados
 
-1. **Source**: Financial transactions stored in S3, partitioned by year/month/day
-2. **Processing**: Scala-based Glue Job using MapPartitions for batch processing
-3. **Enrichment**: DynamoDB batch-get operations (max 100 items per request)
-4. **Destination**: OpenSearch cluster with enriched data in camelCase format
+1. **Origem**: Transações financeiras armazenadas no S3, particionadas por ano/mês/dia
+2. **Processamento**: Job Glue em Scala usando MapPartitions para processamento em lote
+3. **Enriquecimento**: Operações batch-get no DynamoDB (máx. 100 itens por requisição)
+4. **Destino**: Cluster OpenSearch com dados enriquecidos em formato camelCase
 
-## Requirements Compliance
+## Conformidade com requisitos
 
-### Functional Requirements ✅
+### Requisitos funcionais ✅
 
-| Requirement                       | Status | Implementation                           |
-| --------------------------------- | ------ | ---------------------------------------- |
-| Read from S3 partitioned data     | ✅     | Spark DataFrame with partition filtering |
-| Enrich with DynamoDB data         | ✅     | Batch-get using numero_unico_conta       |
-| Multiple transactions per account | ✅     | Supported in data model                  |
-| 1000+ test transactions           | ✅     | Configurable in data generation          |
-| 20+ distinct accounts             | ✅     | Configurable in data generation          |
+| Requisito                        | Status | Implementação                          |
+| -------------------------------- | ------ | -------------------------------------- |
+| Ler dados do S3 particionados    | ✅     | DataFrame Spark com filtro de partição |
+| Enriquecer com dados do DynamoDB | ✅     | Batch-get usando numero_unico_conta    |
+| Múltiplas transações por conta   | ✅     | Suportado no modelo de dados           |
+| 1000+ transações de teste        | ✅     | Configurável na geração de dados       |
+| 20+ contas distintas             | ✅     | Configurável na geração de dados       |
 
-### Non-Functional Requirements ✅
+### Requisitos não funcionais ✅
 
-| Requirement                  | Status | Implementation                     |
-| ---------------------------- | ------ | ---------------------------------- |
-| S3 data in JSON format       | ✅     | JSON files with proper schema      |
-| OpenSearch in camelCase JSON | ✅     | Field transformation in enrichment |
-| Scala language for Glue      | ✅     | Scala 2.12 with type safety        |
-| MapPartitions processing     | ✅     | Batch enrichment per partition     |
-| DynamoDB batch-get           | ✅     | Max 100 items, retry logic         |
-| Infrastructure as Code       | ✅     | Complete Terraform configuration   |
-| Glue version 4.0             | ✅     | Configurable (4.0 or 5.0)          |
+| Requisito                    | Status | Implementação                             |
+| ---------------------------- | ------ | ----------------------------------------- |
+| Dados S3 em formato JSON     | ✅     | Arquivos JSON com esquema adequado        |
+| OpenSearch em JSON camelCase | ✅     | Transformação de campos no enriquecimento |
+| Glue em Scala                | ✅     | Scala 2.12 com segurança de tipos         |
+| Processamento MapPartitions  | ✅     | Enriquecimento em lote por partição       |
+| DynamoDB batch-get           | ✅     | Máx. 100 itens, lógica de retry           |
+| Infraestrutura como código   | ✅     | Configuração Terraform completa           |
+| Glue versão 4.0              | ✅     | Configurável (4.0 ou 5.0)                 |
 
-## Project Structure
+## Estrutura do projeto
 
 ```
 .
-├── README.md                          # Project overview and quick start
-├── TODO.md                            # Implementation checklist
-├── TIME_TRACKING.md                   # Development time tracking
-├── PROJECT_SUMMARY.md                 # This file
-├── Makefile                           # Automation commands
-├── .gitignore                         # Git ignore rules
+├── README.md                          # Visão geral e início rápido
+├── TODO.md                            # Checklist de implementação
+├── TIME_TRACKING.md                   # Acompanhamento de tempo
+├── PROJECT_SUMMARY.md                 # Este arquivo
+├── Makefile                           # Comandos de automação
+├── .gitignore                         # Regras do Git
 │
-├── docs/                              # Documentation
-│   ├── ARCHITECTURE.md                # Detailed architecture
-│   ├── DEPLOYMENT.md                  # Deployment guide
-│   └── DEMO.md                        # Demo preparation
+├── docs/                              # Documentação
+│   ├── ARCHITECTURE.md                # Arquitetura detalhada
+│   ├── DEPLOYMENT.md                  # Guia de implantação
+│   └── DEMO.md                        # Preparação para demo
 │
 ├── infrastructure/                    # Terraform IaC
-│   ├── main.tf                        # Main configuration
-│   ├── variables.tf                   # Variable definitions
-│   ├── outputs.tf                     # Output values
-│   ├── s3.tf                          # S3 buckets
-│   ├── dynamodb.tf                    # DynamoDB table
-│   ├── opensearch.tf                  # OpenSearch domain
-│   ├── glue.tf                        # Glue Job and IAM
-│   └── terraform.tfvars.example       # Example variables
+│   ├── main.tf                        # Configuração principal
+│   ├── variables.tf                   # Definições de variáveis
+│   ├── outputs.tf                    # Valores de saída
+│   ├── s3.tf                          # Buckets S3
+│   ├── dynamodb.tf                    # Tabela DynamoDB
+│   ├── opensearch.tf                  # Domínio OpenSearch
+│   ├── glue.tf                        # Job Glue e IAM
+│   └── terraform.tfvars.example       # Exemplo de variáveis
 │
-├── glue-job/                          # Scala Glue Job
-│   ├── build.sbt                      # SBT build config
+├── glue-job/                          # Job Glue em Scala
+│   ├── build.sbt                      # Configuração SBT
 │   ├── project/
-│   │   ├── build.properties           # SBT version
-│   │   └── plugins.sbt                # SBT plugins
+│   │   ├── build.properties           # Versão SBT
+│   │   └── plugins.sbt                # Plugins SBT
 │   └── src/main/scala/
-│       ├── FinancialTransactionProcessor.scala  # Main job
+│       ├── FinancialTransactionProcessor.scala  # Job principal
 │       ├── models/
-│       │   └── Transaction.scala      # Data models
+│       │   └── Transaction.scala       # Modelos de dados
 │       ├── enrichment/
-│       │   └── DynamoDBEnricher.scala # DynamoDB logic
+│       │   └── DynamoDBEnricher.scala # Lógica DynamoDB
 │       └── sink/
-│           └── OpenSearchSink.scala   # OpenSearch writer
+│           └── OpenSearchSink.scala   # Gravador OpenSearch
 │
-└── data-generation/                   # Test data generators
-    ├── requirements.txt               # Python dependencies
-    ├── config.json                    # Configuration
-    ├── generate_customers.py          # Customer data
-    └── generate_transactions.py       # Transaction data
+└── data-generation/                   # Geradores de dados de teste
+    ├── requirements.txt               # Dependências Python
+    ├── config.json                    # Configuração
+    ├── generate_customers.py          # Dados de clientes
+    └── generate_transactions.py       # Dados de transações
 ```
 
-## Key Technical Implementations
+## Implementações técnicas principais
 
-### 1. MapPartitions for Batch Processing
+### 1. MapPartitions para processamento em lote
 
-**Location**: `glue-job/src/main/scala/FinancialTransactionProcessor.scala`
+**Local**: `glue-job/src/main/scala/FinancialTransactionProcessor.scala`
 
 ```scala
 transactions.rdd.mapPartitions { partition =>
@@ -113,39 +113,39 @@ transactions.rdd.mapPartitions { partition =>
 }
 ```
 
-**Benefits**:
+**Benefícios**:
 
-- Minimizes DynamoDB API calls
-- Processes entire partition in one batch
-- Efficient resource utilization
+- Minimiza chamadas à API do DynamoDB
+- Processa a partição inteira em um lote
+- Uso eficiente de recursos
 
 ### 2. DynamoDB Batch-Get
 
-**Location**: `glue-job/src/main/scala/enrichment/DynamoDBEnricher.scala`
+**Local**: `glue-job/src/main/scala/enrichment/DynamoDBEnricher.scala`
 
-**Features**:
+**Recursos**:
 
-- Batches up to 100 items per request (DynamoDB limit)
-- Handles unprocessed keys with retry
-- Exponential backoff for throttling
-- Comprehensive error handling
+- Lotes de até 100 itens por requisição (limite DynamoDB)
+- Trata chaves não processadas com retry
+- Backoff exponencial para throttling
+- Tratamento de erros abrangente
 
-### 3. OpenSearch Bulk Indexing
+### 3. Indexação em massa no OpenSearch
 
-**Location**: `glue-job/src/main/scala/sink/OpenSearchSink.scala`
+**Local**: `glue-job/src/main/scala/sink/OpenSearchSink.scala`
 
-**Features**:
+**Recursos**:
 
-- Bulk API for efficient indexing
-- Configurable batch size (default 1000)
-- Retry logic with exponential backoff
-- Document ID based on codigo_lancamento (prevents duplicates)
+- API bulk para indexação eficiente
+- Tamanho de lote configurável (padrão 1000)
+- Lógica de retry com backoff exponencial
+- ID do documento baseado em codigo_lancamento (evita duplicatas)
 
-### 4. Data Transformation
+### 4. Transformação de dados
 
 **snake_case (S3) → camelCase (OpenSearch)**
 
-| S3 Field                      | OpenSearch Field           |
+| Campo S3                      | Campo OpenSearch           |
 | ----------------------------- | -------------------------- |
 | codigo_lancamento             | codigoLancamento           |
 | numero_unico_conta            | numeroUnicoConta           |
@@ -157,9 +157,9 @@ transactions.rdd.mapPartitions { partition =>
 | data_nascimento_titular_conta | dataNascimentoTitularConta |
 | zip-code                      | zipCode                    |
 
-## Data Schemas
+## Esquemas de dados
 
-### S3 Transaction Schema
+### Esquema de transação no S3
 
 ```json
 {
@@ -172,19 +172,19 @@ transactions.rdd.mapPartitions { partition =>
 }
 ```
 
-### DynamoDB Customer Schema
+### Esquema de cliente no DynamoDB
 
 ```json
 {
   "numero_unico_conta": "uuid",
-  "nome_titular_conta": "John Doe",
+  "nome_titular_conta": "João Silva",
   "data_nascimento_titular_conta": "1990-01-15T00:00:00Z",
   "zip-code": "12345-678",
   "data_criacao_registro": "2023-01-01"
 }
 ```
 
-### OpenSearch Enriched Schema
+### Esquema enriquecido no OpenSearch
 
 ```json
 {
@@ -194,209 +194,209 @@ transactions.rdd.mapPartitions { partition =>
   "dataCompletaTransacao": "2024-01-15T10:30:00Z",
   "tipoTransacao": "CREDITO",
   "tipoProdutoTransacao": "PIX",
-  "nomeTitularConta": "John Doe",
+  "nomeTitularConta": "João Silva",
   "dataNascimentoTitularConta": "1990-01-15T00:00:00Z",
   "zipCode": "12345-678"
 }
 ```
 
-## Deployment Process
+## Processo de implantação
 
-### Quick Start Commands
+### Comandos de início rápido
 
 ```bash
-# 1. Deploy Infrastructure
+# 1. Implantar infraestrutura
 cd infrastructure
 terraform init
 terraform apply
 
-# 2. Generate Test Data
+# 2. Gerar dados de teste
 cd ../data-generation
 pip install -r requirements.txt
 python generate_customers.py
 python generate_transactions.py
 
-# 3. Build Glue Job
+# 3. Compilar job Glue
 cd ../glue-job
 sbt clean package
 
-# 4. Deploy Glue Job
-aws s3 cp target/scala-2.12/*.jar s3://YOUR-GLUE-BUCKET/scripts/
+# 4. Implantar job Glue
+aws s3 cp target/scala-2.12/*.jar s3://SEU-BUCKET-GLUE/scripts/
 
-# 5. Run Glue Job
+# 5. Executar job Glue
 aws glue start-job-run --job-name financial-transaction-processor \
   --arguments='--year=2024,--month=01,--day=15'
 ```
 
-## Testing and Validation
+## Testes e validação
 
-### Test Data Generated
+### Dados de teste gerados
 
-- **Customers**: 25 distinct accounts (configurable)
-- **Transactions**: 1200+ transactions (configurable)
-- **Date Range**: January 2024 (configurable)
-- **Partitions**: Multiple year/month/day partitions
+- **Clientes**: 25 contas distintas (configurável)
+- **Transações**: 1200+ transações (configurável)
+- **Intervalo de datas**: Janeiro de 2024 (configurável)
+- **Partições**: Múltiplas partições ano/mês/dia
 
-### Validation Points
+### Pontos de validação
 
-1. ✅ S3 data properly partitioned
-2. ✅ DynamoDB records created
-3. ✅ Glue Job executes successfully
-4. ✅ Data enriched correctly
-5. ✅ OpenSearch index populated
-6. ✅ camelCase transformation applied
-7. ✅ CloudWatch logs available
+1. ✅ Dados no S3 corretamente particionados
+2. ✅ Registros no DynamoDB criados
+3. ✅ Job Glue executado com sucesso
+4. ✅ Dados enriquecidos corretamente
+5. ✅ Índice OpenSearch populado
+6. ✅ Transformação camelCase aplicada
+7. ✅ Logs CloudWatch disponíveis
 
-## Performance Considerations
+## Considerações de desempenho
 
-### Optimization Strategies
+### Estratégias de otimização
 
-1. **Batch Processing**: MapPartitions reduces DynamoDB calls
-2. **Bulk Operations**: OpenSearch bulk API for efficient indexing
-3. **Partitioning**: S3 data partitioned for incremental processing
-4. **Caching**: Customer data cached within partition
-5. **Parallelism**: Spark executors process partitions in parallel
+1. **Processamento em lote**: MapPartitions reduz chamadas ao DynamoDB
+2. **Operações em massa**: API bulk do OpenSearch para indexação eficiente
+3. **Particionamento**: Dados S3 particionados para processamento incremental
+4. **Cache**: Dados de clientes em cache dentro da partição
+5. **Paralelismo**: Executores Spark processam partições em paralelo
 
-### Scalability
+### Escalabilidade
 
-- **Horizontal**: Increase Glue workers (2-50+)
-- **Vertical**: Upgrade worker type (G.1X → G.2X)
-- **Data Volume**: Tested with 1000+ records, scales to millions
-- **Throughput**: DynamoDB on-demand auto-scales
+- **Horizontal**: Aumentar workers do Glue (2–50+)
+- **Vertical**: Atualizar tipo de worker (G.1X → G.2X)
+- **Volume de dados**: Testado com 1000+ registros, escala para milhões
+- **Throughput**: DynamoDB on-demand escala automaticamente
 
-## Security Features
+## Recursos de segurança
 
-1. **Encryption at Rest**:
+1. **Criptografia em repouso**:
    - S3: SSE-AES256
-   - DynamoDB: Server-side encryption
-   - OpenSearch: Encryption enabled
+   - DynamoDB: Criptografia no servidor
+   - OpenSearch: Criptografia habilitada
 
-2. **Encryption in Transit**:
-   - HTTPS/TLS for all communications
-   - OpenSearch node-to-node encryption
+2. **Criptografia em trânsito**:
+   - HTTPS/TLS para todas as comunicações
+   - Criptografia nó a nó no OpenSearch
 
 3. **IAM**:
-   - Least privilege principle
-   - Separate roles for each service
-   - No hardcoded credentials
+   - Princípio do menor privilégio
+   - Papéis separados por serviço
+   - Sem credenciais hardcoded
 
-4. **Network**:
-   - Optional VPC deployment
+4. **Rede**:
+   - Implantação em VPC opcional
    - Security groups
-   - IP whitelisting for OpenSearch
+   - Lista branca de IPs para OpenSearch
 
-## Monitoring and Observability
+## Monitoramento e observabilidade
 
-### CloudWatch Integration
+### Integração CloudWatch
 
-- **Glue Job Logs**: Application and error logs
-- **OpenSearch Logs**: Application, index, and search logs
-- **Metrics**: Job duration, DPU usage, success/failure rates
-- **Alarms**: Job failures, DynamoDB throttling, OpenSearch health
+- **Logs do job Glue**: Logs de aplicação e erro
+- **Logs OpenSearch**: Aplicação, índice e busca
+- **Métricas**: Duração do job, uso de DPU, taxas de sucesso/falha
+- **Alarmes**: Falhas do job, throttling DynamoDB, saúde do OpenSearch
 
-### Logging Strategy
+### Estratégia de logging
 
-- Structured logging throughout
-- Log levels: INFO, WARN, ERROR
-- Partition-level progress tracking
-- Performance metrics logging
+- Logging estruturado em todo o código
+- Níveis: INFO, WARN, ERROR
+- Acompanhamento de progresso por partição
+- Registro de métricas de desempenho
 
-## Cost Optimization
+## Otimização de custos
 
-1. **Glue**: Right-sized workers, appropriate job timeout
-2. **DynamoDB**: On-demand billing for variable workloads
-3. **OpenSearch**: Small instance for development
-4. **S3**: Lifecycle policies for data archival
-5. **CloudWatch**: 7-day log retention
+1. **Glue**: Workers dimensionados, timeout adequado do job
+2. **DynamoDB**: Cobrança on-demand para cargas variáveis
+3. **OpenSearch**: Instância pequena para desenvolvimento
+4. **S3**: Políticas de ciclo de vida para arquivamento
+5. **CloudWatch**: Retenção de logs de 7 dias
 
-## Documentation Quality
+## Qualidade da documentação
 
-- ✅ Comprehensive README
-- ✅ Detailed architecture documentation
-- ✅ Step-by-step deployment guide
-- ✅ Demo preparation guide
-- ✅ Inline code comments
-- ✅ Clear variable naming
-- ✅ Type safety with Scala
+- ✅ README abrangente
+- ✅ Documentação detalhada da arquitetura
+- ✅ Guia de implantação passo a passo
+- ✅ Guia de preparação para demo
+- ✅ Comentários no código
+- ✅ Nomenclatura clara de variáveis
+- ✅ Segurança de tipos com Scala
 
-## Code Quality
+## Qualidade do código
 
-### Best Practices Applied
+### Boas práticas aplicadas
 
-1. **Functional Programming**: Immutable data, pure functions
-2. **Type Safety**: Scala case classes, compile-time checks
-3. **Error Handling**: Try/Catch, retry logic, logging
-4. **Separation of Concerns**: Modular design
-5. **DRY Principle**: Reusable components
-6. **SOLID Principles**: Single responsibility, dependency injection
+1. **Programação funcional**: Dados imutáveis, funções puras
+2. **Segurança de tipos**: Case classes Scala, checagens em tempo de compilação
+3. **Tratamento de erros**: Try/Catch, lógica de retry, logging
+4. **Separação de responsabilidades**: Design modular
+5. **Princípio DRY**: Componentes reutilizáveis
+6. **Princípios SOLID**: Responsabilidade única, injeção de dependência
 
-### Testing Considerations
+### Considerações de testes
 
-- Unit testable components
-- Integration test scenarios
-- Data validation
-- Error case handling
+- Componentes testáveis unitariamente
+- Cenários de teste de integração
+- Validação de dados
+- Tratamento de casos de erro
 
-## Deliverables
+## Entregáveis
 
-### Files to Include in ZIP
+### Arquivos a incluir no ZIP
 
-1. All source code (Scala, Python, Terraform)
-2. Documentation (README, guides)
-3. Configuration examples
-4. Build files (build.sbt, requirements.txt)
-5. Time tracking report
-6. This summary document
+1. Todo o código-fonte (Scala, Python, Terraform)
+2. Documentação (README, guias)
+3. Exemplos de configuração
+4. Arquivos de build (build.sbt, requirements.txt)
+5. Relatório de acompanhamento de tempo
+6. Este documento de resumo
 
-### Excluded from ZIP
+### Excluir do ZIP
 
-- `.terraform/` directory
-- `target/` build artifacts
-- `__pycache__/` Python cache
-- `.tfstate` files
-- Generated data files
+- Diretório `.terraform/`
+- Artefatos de build em `target/`
+- Cache Python `__pycache__/`
+- Arquivos `.tfstate`
+- Arquivos de dados gerados
 
-## Demo Highlights
+## Destaques da demo
 
-### Key Points to Demonstrate
+### Pontos principais a demonstrar
 
-1. ✅ Complete infrastructure provisioning
-2. ✅ Data generation and upload
-3. ✅ Glue Job execution
-4. ✅ MapPartitions implementation
-5. ✅ DynamoDB batch-get optimization
-6. ✅ OpenSearch bulk indexing
-7. ✅ Data enrichment and transformation
-8. ✅ Error handling and monitoring
+1. ✅ Provisionamento completo da infraestrutura
+2. ✅ Geração e envio de dados
+3. ✅ Execução do job Glue
+4. ✅ Implementação MapPartitions
+5. ✅ Otimização batch-get no DynamoDB
+6. ✅ Indexação em massa no OpenSearch
+7. ✅ Enriquecimento e transformação de dados
+8. ✅ Tratamento de erros e monitoramento
 
-### Questions Prepared For
+### Perguntas preparadas
 
-- Why MapPartitions vs map?
-- How to handle missing customer data?
-- Scalability considerations
-- Error recovery strategies
-- Cost optimization approaches
-- Security implementations
-- Performance metrics
+- Por que MapPartitions em vez de map?
+- Como tratar dados de cliente ausentes?
+- Considerações de escalabilidade
+- Estratégias de recuperação de erros
+- Abordagens de otimização de custos
+- Implementações de segurança
+- Métricas de desempenho
 
-## Conclusion
+## Conclusão
 
-This project demonstrates a production-ready, scalable batch processing pipeline using AWS services and best practices. All requirements have been met, and the solution is well-documented, tested, and ready for demonstration.
+Este projeto demonstra um pipeline de processamento em lote pronto para produção e escalável, usando serviços AWS e boas práticas. Todos os requisitos foram atendidos e a solução está bem documentada, testada e pronta para demonstração.
 
-### Key Achievements
+### Conquistas principais
 
-✅ All functional requirements met
-✅ All non-functional requirements met
-✅ Clean, well-documented code
-✅ Production-ready architecture
-✅ Comprehensive documentation
-✅ Complete Infrastructure as Code
-✅ Efficient batch processing
-✅ Robust error handling
-✅ Full observability
+✅ Todos os requisitos funcionais atendidos  
+✅ Todos os requisitos não funcionais atendidos  
+✅ Código limpo e bem documentado  
+✅ Arquitetura pronta para produção  
+✅ Documentação abrangente  
+✅ Infraestrutura como código completa  
+✅ Processamento em lote eficiente  
+✅ Tratamento de erros robusto  
+✅ Observabilidade completa
 
 ---
 
-**Project Status**: ✅ COMPLETE AND READY FOR DEMO
+**Status do projeto**: ✅ CONCLUÍDO E PRONTO PARA DEMO
 
-**Next Steps**: Deploy, test, and prepare for demonstration
+**Próximos passos**: Implantar, testar e preparar a demonstração

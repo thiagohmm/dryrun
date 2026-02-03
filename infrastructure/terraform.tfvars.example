@@ -1,42 +1,42 @@
-# AWS Configuration
+# Configuração AWS
 aws_region = "us-east-1"
 project_name = "financial-batch-processor"
 environment = "dev"
 
-# S3 Configuration
-# Note: S3 bucket names must be globally unique
-# Change the suffix to something unique
+# Configuração S3
+# Nota: nomes de buckets S3 devem ser globalmente únicos
+# Altere o sufixo para algo único
 s3_transactions_bucket_name = "financial-transactions-dev-12345"
 s3_glue_scripts_bucket_name = "glue-scripts-dev-12345"
 
-# DynamoDB Configuration
+# Configuração DynamoDB
 dynamodb_table_name = "customer-registration-dev"
-dynamodb_billing_mode = "PAY_PER_REQUEST"  # or "PROVISIONED"
-# If using PROVISIONED mode:
+dynamodb_billing_mode = "PAY_PER_REQUEST"  # ou "PROVISIONED"
+# Se usar modo PROVISIONED:
 # dynamodb_read_capacity = 5
 # dynamodb_write_capacity = 5
 
-# OpenSearch Configuration
+# Configuração OpenSearch
 opensearch_domain_name = "financial-txns-dev"
 opensearch_version = "OpenSearch_2.11"
-opensearch_instance_type = "t3.small.search"  # Use t3.small for dev, r6g.large for prod
-opensearch_instance_count = 1  # Use 3 for production with HA
+opensearch_instance_type = "t3.small.search"  # Use t3.small para dev, r6g.large para prod
+opensearch_instance_count = 1  # Use 3 para produção com HA
 opensearch_ebs_volume_size = 10  # GB
 opensearch_ebs_volume_type = "gp3"
 
-# OpenSearch Access (for public domain)
-# Add your IP address for access
-opensearch_allowed_ips = ["0.0.0.0/0"]  # WARNING: Change this to your IP in production
+# Acesso OpenSearch (para domínio público)
+# Adicione seu endereço IP para acesso
+opensearch_allowed_ips = ["0.0.0.0/0"]  # AVISO: Altere para seu IP em produção
 
-# Glue Job Configuration
+# Configuração do job Glue
 glue_job_name = "financial-transaction-processor"
-glue_version = "4.0"  # or "5.0"
-glue_worker_type = "G.1X"  # G.1X (8GB) or G.2X (16GB)
+glue_version = "4.0"  # ou "5.0"
+glue_worker_type = "G.1X"  # G.1X (8GB) ou G.2X (16GB)
 glue_number_of_workers = 2
 glue_max_retries = 1
 glue_timeout_minutes = 60
 
-# Optional: VPC Configuration (uncomment for VPC deployment)
+# Opcional: Configuração VPC (descomente para implantação em VPC)
 # vpc_id = "vpc-xxxxx"
 # private_subnet_ids = ["subnet-xxxxx", "subnet-yyyyy"]
 # security_group_ids = ["sg-xxxxx"]

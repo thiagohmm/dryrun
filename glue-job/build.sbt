@@ -4,31 +4,31 @@ version := "1.0"
 
 scalaVersion := "2.12.17"
 
-// Spark and AWS dependencies
+// Dependências Spark e AWS
 libraryDependencies ++= Seq(
-  // Spark Core (provided by Glue runtime)
+  // Spark Core (fornecido pelo runtime do Glue)
   "org.apache.spark" %% "spark-core" % "3.3.0" % "provided",
   "org.apache.spark" %% "spark-sql" % "3.3.0" % "provided",
-  
-  // AWS SDK for DynamoDB
+
+  // AWS SDK para DynamoDB
   "com.amazonaws" % "aws-java-sdk-dynamodb" % "1.12.529",
-  
-  // AWS SDK for OpenSearch
+
+  // AWS SDK para OpenSearch
   "org.opensearch.client" % "opensearch-rest-client" % "2.11.0",
   "org.opensearch.client" % "opensearch-rest-high-level-client" % "2.11.0",
-  
-  // JSON processing
+
+  // Processamento JSON
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.15.2",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.15.2",
-  
+
   // Logging
   "org.slf4j" % "slf4j-api" % "1.7.36" % "provided",
-  
-  // Testing (optional)
+
+  // Testes (opcional)
   "org.scalatest" %% "scalatest" % "3.2.15" % "test"
 )
 
-// Assembly settings for creating fat JAR
+// Configurações do Assembly para criar JAR fat
 assembly / assemblyMergeStrategy := {
   case PathList("META-INF", xs @ _*) => 
     xs match {
@@ -50,10 +50,10 @@ assembly / assemblyExcludedJars := {
   }
 }
 
-// Assembly JAR name
+// Nome do JAR do Assembly
 assembly / assemblyJarName := s"${name.value}_${scalaBinaryVersion.value}-${version.value}.jar"
 
-// Compiler options
+// Opções do compilador
 scalacOptions ++= Seq(
   "-encoding", "UTF-8",
   "-deprecation",

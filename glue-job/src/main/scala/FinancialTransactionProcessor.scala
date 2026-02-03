@@ -10,27 +10,30 @@ import org.slf4j.LoggerFactory
 import scala.collection.JavaConverters._
 
 /**
- * AWS Glue Job for processing financial transactions
- * 
- * This job:
- * 1. Reads transaction data from S3 (partitioned by year/month/day)
- * 2. Enriches transactions with customer data from DynamoDB using batch-get
- * 3. Writes enriched data to OpenSearch in camelCase format
- * 
- * Key Features:
- * - Uses MapPartitions for efficient batch processing
- * - DynamoDB batch-get (max 100 items per request)
- * - Bulk indexing to OpenSearch
- * - Error handling and retry logic
+ * Job AWS Glue para processamento de transações financeiras
+ *
+ * Este job:
+ * 1. Lê dados de transações do S3 (particionados por ano/mês/dia)
+ * 2. Enriquece transações com dados de clientes do DynamoDB via batch-get
+ * 3. Grava dados enriquecidos no OpenSearch em formato camelCase
+ *
+ * Características principais:
+ * - Usa MapPartitions para processamento em lote eficiente
+ * - Batch-get no DynamoDB (máx. 100 itens por requisição)
+ * - Indexação em massa no OpenSearch
+ * - Tratamento de erros e lógica de retry
  */
 object FinancialTransactionProcessor {
-  
+
+  /** Tamanho do chunk por partição: evita carregar a partição inteira na memória (OOM em partições grandes). */
+  private val EnrichmentChunkSize = 1000
+
   private val logger = LoggerFactory.getLogger(getClass)
   
   def main(sysArgs: Array[String]): Unit = {
     logger.info("Starting Financial Transaction Processor")
     
-    // Parse arguments
+    // Analisa os argumentos
     val args = GlueArgParser.getResolvedOptions(
       sysArgs,
       Array(
@@ -65,16 +68,16 @@ object FinancialTransactionProcessor {
     logger.info(s"  OpenSearch Index: $openSearchIndex")
     logger.info(s"  AWS Region: $awsRegion")
     
-    // Initialize Spark and Glue contexts
+    // Inicializa contextos Spark e Glue
     val sparkContext = new SparkContext()
     val glueContext = new GlueContext(sparkContext)
     val spark = glueContext.getSparkSession
     
-    // Initialize job
+    // Inicializa o job
     Job.init(jobName, glueContext, args.asJava)
     
     try {
-      // Process transactions
+      // Processa as transações
       processTransactions(
         spark,
         s3Bucket,
@@ -87,7 +90,7 @@ object FinancialTransactionProcessor {
         awsRegion
       )
       
-      // Commit job
+      // Confirma o job
       Job.commit()
       logger.info("Job completed successfully")
       
@@ -101,7 +104,7 @@ object FinancialTransactionProcessor {
   }
   
   /**
-   * Main processing logic
+   * Lógica principal de processamento
    */
   def processTransactions(
     spark: SparkSession,
@@ -117,17 +120,17 @@ object FinancialTransactionProcessor {
     
     import spark.implicits._
     
-    // Construct S3 path for the specific date partition
+    // Monta o caminho S3 para a partição de data específica
     val s3Path = s"s3://$s3Bucket/transactions/year=$year/month=$month/day=$day/"
     logger.info(s"Reading transactions from: $s3Path")
     
-    // Read JSON files from S3
+    // Lê arquivos JSON do S3
     val transactionsDF = spark.read
       .option("inferSchema", "true")
       .option("timestampFormat", "yyyy-MM-dd'T'HH:mm:ss'Z'")
       .json(s3Path)
     
-    // Convert to Dataset for type safety
+    // Converte para Dataset para segurança de tipos
     val transactions: Dataset[Transaction] = transactionsDF.as[Transaction]
     
     val transactionCount = transactions.count()
@@ -138,60 +141,41 @@ object FinancialTransactionProcessor {
       return
     }
     
-    // Create OpenSearch sink and ensure index exists
+    // Cria o sink OpenSearch e garante que o índice exista
     val openSearchSink = OpenSearchSink(openSearchEndpoint, openSearchIndex)
     openSearchSink.createIndexIfNotExists()
     
-    // Process transactions using mapPartitions for batch enrichment
+    // Processa transações usando mapPartitions: uma conexão/enricher por partição, dados em chunks
     val enrichedTransactions = transactions.rdd.mapPartitions { partition =>
       logger.info("Processing partition...")
-      
-      // Create DynamoDB enricher for this partition
       val enricher = DynamoDBEnricher(dynamoDBTable, awsRegion)
-      
+
       try {
-        // Convert partition to list to allow multiple passes
-        val transactionList = partition.toList
-        
-        if (transactionList.isEmpty) {
-          logger.info("Empty partition, skipping")
-          Iterator.empty
-        } else {
-          logger.info(s"Partition contains ${transactionList.size} transactions")
-          
-          // Extract unique account IDs from this partition
-          val uniqueAccountIds = transactionList
-            .map(_.numero_unico_conta)
-            .toSet
-          
-          logger.info(s"Fetching customer data for ${uniqueAccountIds.size} unique accounts")
-          
-          // Batch-get customer data from DynamoDB
-          val customerDataMap = enricher.batchGetCustomerData(uniqueAccountIds)
-          
-          logger.info(s"Retrieved ${customerDataMap.size} customer records")
-          
-          // Enrich each transaction with customer data
-          val enriched = transactionList.map { transaction =>
-            val customerData = customerDataMap.get(transaction.numero_unico_conta)
-            EnrichedTransaction.fromTransactionAndCustomer(transaction, customerData)
+        // Processa a partição em chunks (Iterator) em vez de partition.toList.
+        // Assim só há no máximo EnrichmentChunkSize registros na memória por vez, evitando OOM
+        // em partições muito grandes. Cada chunk gera um batch-get ao DynamoDB.
+        partition.grouped(EnrichmentChunkSize).flatMap { chunk =>
+          if (chunk.isEmpty) {
+            Iterator.empty
+          } else {
+            val uniqueAccountIds = chunk.map(_.numero_unico_conta).toSet
+            val customerDataMap = enricher.batchGetCustomerData(uniqueAccountIds)
+            chunk.map { transaction =>
+              val customerData = customerDataMap.get(transaction.numero_unico_conta)
+              EnrichedTransaction.fromTransactionAndCustomer(transaction, customerData)
+            }.iterator
           }
-          
-          logger.info(s"Enriched ${enriched.size} transactions in partition")
-          
-          enriched.iterator
         }
       } catch {
         case e: Exception =>
           logger.error("Error processing partition", e)
           Iterator.empty
       } finally {
-        // Clean up enricher resources
         enricher.close()
       }
     }
     
-    // Write to OpenSearch using foreachPartition for efficient bulk writes
+    // Grava no OpenSearch usando foreachPartition para escritas em massa eficientes
     enrichedTransactions.foreachPartition { partition =>
       logger.info("Writing partition to OpenSearch...")
       
@@ -210,7 +194,7 @@ object FinancialTransactionProcessor {
     
     logger.info("Transaction processing completed")
     
-    // Log statistics
+    // Registra estatísticas
     val enrichedCount = enrichedTransactions.count()
     logger.info(s"Total enriched transactions: $enrichedCount")
     logger.info(s"Enrichment rate: ${(enrichedCount.toDouble / transactionCount * 100).formatted("%.2f")}%")

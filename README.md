@@ -1,25 +1,25 @@
-# AWS Glue Batch Processing Pipeline
+# Pipeline de processamento em lote com AWS Glue
 
-## Overview
+## Visão geral
 
-This project implements a batch processing pipeline for financial transactions using AWS Glue, DynamoDB, and OpenSearch. The solution reads transaction data from S3, enriches it with customer information from DynamoDB, and stores the enriched data in OpenSearch for analytics.
+Este projeto implementa um pipeline de processamento em lote para transações financeiras usando AWS Glue, DynamoDB e OpenSearch. A solução lê dados de transações do S3, enriquece com informações de clientes do DynamoDB e armazena os dados enriquecidos no OpenSearch para análise.
 
-## Architecture
+## Arquitetura
 
 ```
-S3 Bucket (JSON) → AWS Glue Job (Scala) → DynamoDB (Batch Enrichment) → OpenSearch
+Bucket S3 (JSON) → Job AWS Glue (Scala) → DynamoDB (enriquecimento em lote) → OpenSearch
 ```
 
-### Components
+### Componentes
 
-1. **S3 Bucket**: Stores financial transaction data partitioned by year/month/day
-2. **AWS Glue Job**: Scala-based ETL job using MapPartitions for batch processing
-3. **DynamoDB**: Customer registration data for enrichment
-4. **OpenSearch**: Final storage for enriched transactions
+1. **Bucket S3**: Armazena dados de transações financeiras particionados por ano/mês/dia
+2. **Job AWS Glue**: Job ETL em Scala usando MapPartitions para processamento em lote
+3. **DynamoDB**: Dados de cadastro de clientes para enriquecimento
+4. **OpenSearch**: Armazenamento final das transações enriquecidas
 
-## Data Schemas
+## Esquemas de dados
 
-### S3 Transaction Data
+### Dados de transação no S3
 
 ```json
 {
@@ -32,19 +32,19 @@ S3 Bucket (JSON) → AWS Glue Job (Scala) → DynamoDB (Batch Enrichment) → Op
 }
 ```
 
-### DynamoDB Customer Data
+### Dados de cliente no DynamoDB
 
 ```json
 {
   "numero_unico_conta": "uuid",
-  "nome_titular_conta": "John Doe",
+  "nome_titular_conta": "João Silva",
   "data_nascimento_titular_conta": "1990-01-15T00:00:00Z",
   "zip-code": "12345-678",
   "data_criacao_registro": "2023-01-01"
 }
 ```
 
-### OpenSearch Enriched Data (camelCase)
+### Dados enriquecidos no OpenSearch (camelCase)
 
 ```json
 {
@@ -54,13 +54,13 @@ S3 Bucket (JSON) → AWS Glue Job (Scala) → DynamoDB (Batch Enrichment) → Op
   "dataCompletaTransacao": "2024-01-15T10:30:00Z",
   "tipoTransacao": "CREDITO",
   "tipoProdutoTransacao": "PIX",
-  "nomeTitularConta": "John Doe",
+  "nomeTitularConta": "João Silva",
   "dataNascimentoTitularConta": "1990-01-15T00:00:00Z",
   "zipCode": "12345-678"
 }
 ```
 
-## Project Structure
+## Estrutura do projeto
 
 ```
 .
@@ -72,37 +72,37 @@ S3 Bucket (JSON) → AWS Glue Job (Scala) → DynamoDB (Batch Enrichment) → Op
 │   ├── dynamodb.tf
 │   ├── opensearch.tf
 │   └── glue.tf
-├── glue-job/               # Scala Glue Job
+├── glue-job/               # Job Glue em Scala
 │   ├── build.sbt
 │   └── src/main/scala/
 │       ├── FinancialTransactionProcessor.scala
 │       ├── models/
 │       ├── enrichment/
 │       └── sink/
-├── data-generation/        # Test data generators
+├── data-generation/        # Geradores de dados de teste
 │   ├── generate_transactions.py
 │   ├── generate_customers.py
 │   ├── requirements.txt
 │   └── config.json
-├── docs/                   # Documentation
+├── docs/                   # Documentação
 │   ├── ARCHITECTURE.md
 │   ├── DEPLOYMENT.md
 │   └── DEMO.md
 └── README.md
 ```
 
-## Prerequisites
+## Pré-requisitos
 
-- AWS Account with appropriate permissions
+- Conta AWS com permissões adequadas
 - Terraform >= 1.0
 - Python >= 3.8
 - Scala 2.12
 - SBT (Scala Build Tool)
-- AWS CLI configured
+- AWS CLI configurado
 
-## Quick Start
+## Início rápido
 
-### 1. Deploy Infrastructure
+### 1. Implantar a infraestrutura
 
 ```bash
 cd infrastructure
@@ -111,7 +111,7 @@ terraform plan
 terraform apply
 ```
 
-### 2. Generate Test Data
+### 2. Gerar dados de teste
 
 ```bash
 cd data-generation
@@ -120,46 +120,46 @@ python generate_customers.py
 python generate_transactions.py
 ```
 
-### 3. Build and Deploy Glue Job
+### 3. Compilar e implantar o job Glue
 
 ```bash
 cd glue-job
 sbt clean package
-# Upload JAR to S3 (output from terraform)
-aws s3 cp target/scala-2.12/financial-transaction-processor_2.12-1.0.jar s3://YOUR_GLUE_SCRIPTS_BUCKET/
+# Enviar JAR para o S3 (saída do terraform output)
+aws s3 cp target/scala-2.12/financial-transaction-processor_2.12-1.0.jar s3://SEU_BUCKET_GLUE_SCRIPTS/
 ```
 
-### 4. Run Glue Job
+### 4. Executar o job Glue
 
 ```bash
 aws glue start-job-run --job-name financial-transaction-processor \
   --arguments='--year=2024,--month=01,--day=15'
 ```
 
-## Technical Requirements Met
+## Requisitos técnicos atendidos
 
-- ✅ S3 data in JSON format
-- ✅ OpenSearch output in camelCase JSON
-- ✅ Scala-based Glue Job
-- ✅ MapPartitions for batch processing
-- ✅ DynamoDB batch-get operations
-- ✅ Infrastructure as Code (Terraform)
-- ✅ Glue Job version 4.0
-- ✅ 1000+ test records with 20+ distinct accounts
+- ✅ Dados no S3 em formato JSON
+- ✅ Saída no OpenSearch em JSON camelCase
+- ✅ Job Glue em Scala
+- ✅ MapPartitions para processamento em lote
+- ✅ Operações batch-get no DynamoDB
+- ✅ Infraestrutura como código (Terraform)
+- ✅ Job Glue versão 4.0
+- ✅ 1000+ registros de teste com 20+ contas distintas
 
-## Development Time Tracking
+## Acompanhamento de tempo de desenvolvimento
 
-Track your development time and report during demo.
+Registre o tempo de desenvolvimento e apresente durante a demo.
 
-## Demo Checklist
+## Checklist da demo
 
-- [ ] Infrastructure deployed successfully
-- [ ] Test data generated and uploaded
-- [ ] Glue Job executed without errors
-- [ ] Data enriched correctly in OpenSearch
-- [ ] Performance metrics reviewed
-- [ ] Code walkthrough prepared
+- [ ] Infraestrutura implantada com sucesso
+- [ ] Dados de teste gerados e enviados
+- [ ] Job Glue executado sem erros
+- [ ] Dados enriquecidos corretamente no OpenSearch
+- [ ] Métricas de desempenho revisadas
+- [ ] Explicação do código preparada
 
-## License
+## Licença
 
-This is a technical assessment project.
+Este é um projeto de avaliação técnica.

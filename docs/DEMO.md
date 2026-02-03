@@ -1,174 +1,174 @@
-# Demo Guide
+# Guia da demo
 
-This guide helps you prepare and execute a successful demonstration of the AWS Glue Batch Processing Pipeline.
+Este guia ajuda a preparar e executar uma demonstração bem-sucedida do pipeline de processamento em lote com AWS Glue.
 
-## Pre-Demo Checklist
+## Checklist pré-demo
 
-### Infrastructure Verification
+### Verificação da infraestrutura
 
-- [ ] All Terraform resources deployed successfully
-- [ ] S3 buckets created and accessible
-- [ ] DynamoDB table populated with customer data
-- [ ] OpenSearch domain active and healthy
-- [ ] Glue Job configured correctly
-- [ ] IAM roles and permissions verified
+- [ ] Todos os recursos Terraform implantados com sucesso
+- [ ] Buckets S3 criados e acessíveis
+- [ ] Tabela DynamoDB populada com dados de clientes
+- [ ] Domínio OpenSearch ativo e saudável
+- [ ] Job Glue configurado corretamente
+- [ ] Papéis e permissões IAM verificados
 
-### Data Verification
+### Verificação dos dados
 
-- [ ] At least 20 distinct customer accounts in DynamoDB
-- [ ] At least 1000 transaction records in S3
-- [ ] Data properly partitioned by year/month/day
-- [ ] Sample queries tested on OpenSearch
+- [ ] Pelo menos 20 contas de clientes distintas no DynamoDB
+- [ ] Pelo menos 1000 registros de transações no S3
+- [ ] Dados particionados corretamente por ano/mês/dia
+- [ ] Consultas de exemplo testadas no OpenSearch
 
-### Code Preparation
+### Preparação do código
 
-- [ ] Glue Job JAR built and uploaded
-- [ ] All source code reviewed and understood
-- [ ] Comments added to complex sections
-- [ ] Code walkthrough prepared
+- [ ] JAR do job Glue compilado e enviado
+- [ ] Todo o código-fonte revisado e compreendido
+- [ ] Comentários nas partes mais complexas
+- [ ] Explicação do código preparada
 
-## Demo Script
+## Roteiro da demo
 
-### Part 1: Introduction (5 minutes)
+### Parte 1: Introdução (5 minutos)
 
-**Talking Points**:
+**Pontos a abordar**:
 
-- Project overview and objectives
-- Architecture components
-- Technical challenges addressed
-- Time invested in development
+- Visão geral e objetivos do projeto
+- Componentes da arquitetura
+- Desafios técnicos enfrentados
+- Tempo investido no desenvolvimento
 
-**Show**:
+**Mostrar**:
 
 ```bash
-# Display project structure
+# Estrutura do projeto
 tree -L 2 -I 'target|.terraform'
 
-# Show README
+# Mostrar README
 cat README.md
 ```
 
-### Part 2: Architecture Walkthrough (10 minutes)
+### Parte 2: Arquitetura (10 minutos)
 
-**Talking Points**:
+**Pontos a abordar**:
 
-- Data flow from S3 → Glue → DynamoDB → OpenSearch
-- Why MapPartitions for batch processing
-- DynamoDB batch-get optimization
-- OpenSearch indexing strategy
+- Fluxo de dados S3 → Glue → DynamoDB → OpenSearch
+- Por que MapPartitions para processamento em lote
+- Otimização batch-get no DynamoDB
+- Estratégia de indexação no OpenSearch
 
-**Show**:
+**Mostrar**:
 
 ```bash
-# Display architecture diagram
+# Diagrama da arquitetura
 cat docs/ARCHITECTURE.md
 
-# Show Terraform infrastructure
+# Infraestrutura Terraform
 cd infrastructure
 terraform show | head -50
 ```
 
-### Part 3: Infrastructure as Code (10 minutes)
+### Parte 3: Infraestrutura como código (10 minutos)
 
-**Demonstrate Terraform Setup**:
+**Demonstrar configuração Terraform**:
 
 ```bash
-# Show main configuration
+# Configuração principal
 cat infrastructure/main.tf
 
-# Show S3 configuration
+# Configuração S3
 cat infrastructure/s3.tf
 
-# Show DynamoDB configuration
+# Configuração DynamoDB
 cat infrastructure/dynamodb.tf
 
-# Show Glue configuration
+# Configuração Glue
 cat infrastructure/glue.tf
 
-# Show OpenSearch configuration
+# Configuração OpenSearch
 cat infrastructure/opensearch.tf
 
-# Display current state
+# Estado atual
 terraform state list
 
-# Show outputs
+# Outputs
 terraform output
 ```
 
-**Explain**:
+**Explicar**:
 
-- Resource dependencies
-- Security configurations
-- Scalability considerations
-- Cost optimization strategies
+- Dependências entre recursos
+- Configurações de segurança
+- Considerações de escalabilidade
+- Estratégias de otimização de custos
 
-### Part 4: Data Generation (5 minutes)
+### Parte 4: Geração de dados (5 minutos)
 
-**Show Test Data Creation**:
+**Mostrar criação dos dados de teste**:
 
 ```bash
 cd ../data-generation
 
-# Show customer generation script
+# Script de geração de clientes
 cat generate_customers.py | head -50
 
-# Show transaction generation script
+# Script de geração de transações
 cat generate_transactions.py | head -50
 
-# Display configuration
+# Configuração
 cat config.json
 
-# Show sample generated data
+# Dados gerados de exemplo
 aws dynamodb scan --table-name customer-registration-dev --max-items 3
 
-# Show S3 data structure
-aws s3 ls s3://YOUR-BUCKET/transactions/ --recursive | head -10
+# Estrutura dos dados no S3
+aws s3 ls s3://SEU-BUCKET/transactions/ --recursive | head -10
 ```
 
-**Explain**:
+**Explicar**:
 
-- Data schema compliance
-- Realistic data generation
-- Volume requirements (1000+ transactions, 20+ accounts)
+- Conformidade com o esquema de dados
+- Geração de dados realistas
+- Requisitos de volume (1000+ transações, 20+ contas)
 
-### Part 5: Glue Job Implementation (15 minutes)
+### Parte 5: Implementação do job Glue (15 minutos)
 
-**Code Walkthrough**:
+**Passeio pelo código**:
 
 ```bash
 cd ../glue-job
 
-# Show build configuration
+# Configuração de build
 cat build.sbt
 
-# Show main processor
+# Processador principal
 cat src/main/scala/FinancialTransactionProcessor.scala
 
-# Show data models
+# Modelos de dados
 cat src/main/scala/models/Transaction.scala
 cat src/main/scala/models/CustomerData.scala
 
-# Show DynamoDB enrichment logic
+# Lógica de enriquecimento DynamoDB
 cat src/main/scala/enrichment/DynamoDBEnricher.scala
 
-# Show OpenSearch sink
+# Sink OpenSearch
 cat src/main/scala/sink/OpenSearchSink.scala
 ```
 
-**Key Points to Explain**:
+**Pontos a explicar**:
 
-1. **MapPartitions Implementation**:
+1. **Implementação MapPartitions**:
 
    ```scala
-   // Explain this pattern
+   // Explicar este padrão
    df.mapPartitions { partition =>
-     // Extract unique account IDs from partition
+     // Extrair IDs de conta únicos da partição
      val accountIds = partition.map(_.numeroUnicoConta).toSet
 
-     // Single batch-get for entire partition
+     // Um único batch-get para toda a partição
      val customerData = batchGetFromDynamoDB(accountIds)
 
-     // Enrich all transactions in partition
+     // Enriquecer todas as transações da partição
      partition.map(txn => enrichTransaction(txn, customerData))
    }
    ```
@@ -176,10 +176,10 @@ cat src/main/scala/sink/OpenSearchSink.scala
 2. **DynamoDB Batch-Get**:
 
    ```scala
-   // Explain batching strategy (max 100 items)
+   // Explicar estratégia de lotes (máx. 100 itens)
    def batchGetFromDynamoDB(accountIds: Set[String]): Map[String, CustomerData] = {
      accountIds.grouped(100).flatMap { batch =>
-       // Batch-get request
+       // Requisição batch-get
        val request = new BatchGetItemRequest()
          .withRequestItems(...)
 
@@ -188,32 +188,32 @@ cat src/main/scala/sink/OpenSearchSink.scala
    }
    ```
 
-3. **CamelCase Transformation**:
+3. **Transformação camelCase**:
 
    ```scala
-   // Explain field name conversion
+   // Explicar conversão de nomes de campos
    def toCamelCase(snakeCase: String): String = {
-     // Implementation details
+     // Detalhes da implementação
    }
    ```
 
-4. **Error Handling**:
+4. **Tratamento de erros**:
    ```scala
-   // Explain retry logic
+   // Explicar lógica de retry
    def withRetry[T](maxRetries: Int)(fn: => T): T = {
-     // Exponential backoff implementation
+     // Implementação de backoff exponencial
    }
    ```
 
-### Part 6: Live Execution (10 minutes)
+### Parte 6: Execução ao vivo (10 minutos)
 
-**Run the Pipeline**:
+**Executar o pipeline**:
 
 ```bash
-# Get job name
+# Obter nome do job
 JOB_NAME=$(cd infrastructure && terraform output -raw glue_job_name)
 
-# Start job run
+# Iniciar execução
 aws glue start-job-run \
   --job-name $JOB_NAME \
   --arguments '{
@@ -222,45 +222,45 @@ aws glue start-job-run \
     "--day":"15"
   }'
 
-# Get run ID
+# Obter ID da execução
 RUN_ID=$(aws glue get-job-runs --job-name $JOB_NAME --max-results 1 \
   --query 'JobRuns[0].Id' --output text)
 
-echo "Job Run ID: $RUN_ID"
+echo "ID da execução: $RUN_ID"
 
-# Monitor status
+# Acompanhar status
 watch -n 5 "aws glue get-job-run --job-name $JOB_NAME --run-id $RUN_ID \
   --query 'JobRun.JobRunState' --output text"
 ```
 
-**Show CloudWatch Logs**:
+**Mostrar logs CloudWatch**:
 
 ```bash
-# Tail logs in real-time
+# Acompanhar logs em tempo real
 aws logs tail /aws-glue/jobs/output --follow --since 5m
 
-# Show specific log events
+# Eventos de log específicos
 aws logs filter-log-events \
   --log-group-name /aws-glue/jobs/output \
   --filter-pattern "Processing partition" \
   --max-items 10
 ```
 
-### Part 7: Results Verification (10 minutes)
+### Parte 7: Verificação dos resultados (10 minutos)
 
-**Query OpenSearch**:
+**Consultar OpenSearch**:
 
 ```bash
-# Get OpenSearch endpoint
+# Obter endpoint OpenSearch
 OPENSEARCH_ENDPOINT=$(cd infrastructure && terraform output -raw opensearch_endpoint)
 
-# Check cluster health
+# Saúde do cluster
 curl -X GET "https://$OPENSEARCH_ENDPOINT/_cluster/health?pretty"
 
-# Count total documents
+# Contar documentos
 curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_count?pretty"
 
-# Show sample enriched documents
+# Documentos enriquecidos de exemplo
 curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty" \
   -H 'Content-Type: application/json' \
   -d '{
@@ -269,10 +269,10 @@ curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty"
   }'
 ```
 
-**Demonstrate Data Enrichment**:
+**Demonstrar enriquecimento**:
 
 ```bash
-# Query showing enriched fields
+# Consulta com campos enriquecidos
 curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty" \
   -H 'Content-Type: application/json' \
   -d '{
@@ -290,10 +290,10 @@ curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty"
   }'
 ```
 
-**Show Analytics Queries**:
+**Consultas analíticas**:
 
 ```bash
-# Aggregate by transaction type
+# Agregação por tipo de transação
 curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty" \
   -H 'Content-Type: application/json' \
   -d '{
@@ -305,7 +305,7 @@ curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty"
     }
   }'
 
-# Aggregate by product type
+# Agregação por tipo de produto
 curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty" \
   -H 'Content-Type: application/json' \
   -d '{
@@ -317,7 +317,7 @@ curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty"
     }
   }'
 
-# Sum total transaction value
+# Soma do valor total das transações
 curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty" \
   -H 'Content-Type: application/json' \
   -d '{
@@ -330,12 +330,12 @@ curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty"
   }'
 ```
 
-### Part 8: Performance Metrics (5 minutes)
+### Parte 8: Métricas de desempenho (5 minutos)
 
-**Show Job Metrics**:
+**Métricas do job**:
 
 ```bash
-# Get job run details
+# Detalhes da execução
 aws glue get-job-run \
   --job-name $JOB_NAME \
   --run-id $RUN_ID \
@@ -348,7 +348,7 @@ aws glue get-job-run \
   }' \
   --output table
 
-# Show CloudWatch metrics
+# Métricas CloudWatch
 aws cloudwatch get-metric-statistics \
   --namespace Glue \
   --metric-name glue.driver.aggregate.numCompletedTasks \
@@ -359,151 +359,139 @@ aws cloudwatch get-metric-statistics \
   --statistics Sum
 ```
 
-**Discuss**:
+**Discutir**:
 
-- Processing time for 1000+ records
-- DynamoDB batch-get efficiency
-- OpenSearch indexing performance
-- Cost per execution
+- Tempo de processamento para 1000+ registros
+- Eficiência do batch-get no DynamoDB
+- Desempenho da indexação no OpenSearch
+- Custo por execução
 
-### Part 9: Code Quality & Best Practices (5 minutes)
+### Parte 9: Qualidade do código e boas práticas (5 minutos)
 
-**Highlight**:
+**Destacar**:
 
-1. **Functional Programming**:
-   - Immutable data structures
-   - Pure functions
-   - Type safety
+1. **Programação funcional**:
+   - Estruturas de dados imutáveis
+   - Funções puras
+   - Segurança de tipos
 
-2. **Error Handling**:
-   - Try/Catch blocks
-   - Retry mechanisms
+2. **Tratamento de erros**:
+   - Blocos Try/Catch
+   - Mecanismos de retry
    - Logging
 
-3. **Performance Optimization**:
-   - MapPartitions for batching
-   - Efficient DynamoDB queries
-   - Bulk OpenSearch inserts
+3. **Otimização de desempenho**:
+   - MapPartitions para lotes
+   - Consultas eficientes ao DynamoDB
+   - Inserções em massa no OpenSearch
 
-4. **Code Organization**:
-   - Separation of concerns
-   - Modular design
-   - Clear naming conventions
+4. **Organização do código**:
+   - Separação de responsabilidades
+   - Design modular
+   - Nomenclatura clara
 
-5. **Testing Considerations**:
-   - Unit testable components
-   - Integration test scenarios
-   - Data validation
+5. **Considerações de teste**:
+   - Componentes testáveis
+   - Cenários de teste de integração
+   - Validação de dados
 
-### Part 10: Q&A and Discussion (10 minutes)
+### Parte 10: Q&A e discussão (10 minutos)
 
-**Prepared Answers for Common Questions**:
+**Respostas preparadas para perguntas comuns**:
 
-**Q: Why MapPartitions instead of map?**
-A: MapPartitions allows us to batch DynamoDB requests per partition, reducing API calls from potentially thousands to just a few dozen, significantly improving performance and reducing costs.
+**P: Por que MapPartitions em vez de map?**  
+R: MapPartitions permite fazer batch de requisições ao DynamoDB por partição, reduzindo as chamadas de API de milhares para dezenas, melhorando desempenho e custo.
 
-**Q: How does the batch-get handle missing customer data?**
-A: The enrichment logic includes null checks and default values. Transactions without matching customer data are still processed but with null enrichment fields, which can be filtered in OpenSearch queries.
+**P: Como o batch-get lida com dados de cliente ausentes?**  
+R: A lógica de enriquecimento trata null e valores padrão. Transações sem cliente correspondente são processadas com campos de enriquecimento nulos, que podem ser filtrados nas consultas ao OpenSearch.
 
-**Q: What happens if the Glue Job fails mid-execution?**
-A: Glue Jobs are idempotent by design. We can re-run for the same date partition. OpenSearch uses document IDs (codigoLancamento) to prevent duplicates through upsert operations.
+**P: O que acontece se o job Glue falhar no meio?**  
+R: Os jobs são idempotentes. Podemos reexecutar para a mesma partição de data. O OpenSearch usa IDs de documento (codigoLancamento) para evitar duplicatas com upsert.
 
-**Q: How would you scale this for millions of records?**
-A:
+**P: Como escalar para milhões de registros?**  
+R: Aumentar workers do Glue (10–50), otimizar tamanho das partições, usar cluster OpenSearch maior, considerar capacidade provisionada no DynamoDB e processamento incremental.
 
-- Increase Glue workers (10-50)
-- Optimize partition size
-- Use larger OpenSearch cluster
-- Consider DynamoDB provisioned capacity
-- Implement incremental processing
+**P: E problemas de qualidade de dados?**  
+R: Validamos o esquema na leitura, tratamos nulls e registramos problemas. Em produção, adicionaríamos regras do AWS Glue Data Quality.
 
-**Q: What about data quality issues?**
-A: We validate schemas during read, handle null values, and log data quality issues. In production, we'd add AWS Glue Data Quality rules.
+**P: Considerações de segurança?**  
+R: Implantação em VPC para OpenSearch, criptografia KMS em todos os armazenamentos, IAM com menor privilégio, auditoria via CloudTrail e isolamento de rede.
 
-**Q: Security considerations?**
-A:
+## Relatório de acompanhamento de tempo
 
-- VPC deployment for OpenSearch
-- KMS encryption for all data stores
-- IAM least privilege
-- Audit logging via CloudTrail
-- Network isolation
-
-## Time Tracking Report
-
-**Template for Demo**:
+**Modelo para a demo**:
 
 ```
-Development Time Breakdown:
-- Infrastructure (Terraform): X hours
-- Glue Job (Scala): Y hours
-- Data Generation: Z hours
-- Testing & Debugging: W hours
-- Documentation: V hours
-Total: XX hours
+Detalhamento do tempo de desenvolvimento:
+- Infraestrutura (Terraform): X horas
+- Job Glue (Scala): Y horas
+- Geração de dados: Z horas
+- Testes e depuração: W horas
+- Documentação: V horas
+Total: XX horas
 ```
 
-## Demo Tips
+## Dicas para a demo
 
-### Do's:
+### Fazer:
 
-✅ Test everything before the demo
-✅ Have backup plans for live demos
-✅ Explain your thought process
-✅ Show both code and results
-✅ Be prepared for questions
-✅ Demonstrate understanding of every line of code
-✅ Highlight challenges overcome
-✅ Show monitoring and logging
+✅ Testar tudo antes da demo  
+✅ Ter plano B para demos ao vivo  
+✅ Explicar o raciocínio  
+✅ Mostrar código e resultados  
+✅ Estar preparado para perguntas  
+✅ Demonstrar entendimento de cada parte do código  
+✅ Destacar desafios superados  
+✅ Mostrar monitoramento e logging
 
-### Don'ts:
+### Evitar:
 
-❌ Rush through explanations
-❌ Skip error handling discussion
-❌ Ignore performance considerations
-❌ Forget to mention limitations
-❌ Claim you used AI (prohibited)
-❌ Be unprepared for code questions
+❌ Explicar com pressa  
+❌ Pular a parte de tratamento de erros  
+❌ Ignorar desempenho  
+❌ Omitir limitações  
+❌ Dizer que usou IA (proibido)  
+❌ Ir sem preparo para perguntas sobre código
 
-## Backup Plans
+## Planos de contingência
 
-### If Live Execution Fails:
+### Se a execução ao vivo falhar:
 
-1. **Have Pre-recorded Results**:
-   - Screenshots of successful runs
-   - Sample OpenSearch queries and results
-   - CloudWatch logs from previous runs
+1. **Ter resultados pré-gravados**:
+   - Capturas de tela de execuções bem-sucedidas
+   - Exemplos de consultas e resultados no OpenSearch
+   - Logs CloudWatch de execuções anteriores
 
-2. **Explain the Issue**:
-   - Show debugging approach
-   - Demonstrate troubleshooting skills
-   - Discuss how you'd resolve it
+2. **Explicar o problema**:
+   - Mostrar como faria o debug
+   - Demonstrar capacidade de troubleshooting
+   - Comentar como resolveria
 
-3. **Show Alternative Evidence**:
-   - Unit test results
-   - Local Scala execution
-   - Sample data transformations
+3. **Mostrar evidências alternativas**:
+   - Resultados de testes unitários
+   - Execução local em Scala
+   - Exemplos de transformações de dados
 
-## Post-Demo Deliverables
+## Entregáveis pós-demo
 
-**Zip File Contents**:
+**Conteúdo do arquivo ZIP**:
 
 ```
 financial-batch-processor.zip
-├── infrastructure/          # All Terraform files
-├── glue-job/               # All Scala source code
-├── data-generation/        # Python scripts
-├── docs/                   # Documentation
+├── infrastructure/          # Todos os arquivos Terraform
+├── glue-job/               # Todo o código-fonte Scala
+├── data-generation/        # Scripts Python
+├── docs/                   # Documentação
 ├── README.md
 ├── .gitignore
 ├── Makefile
-└── TIME_TRACKING.md        # Your time investment report
+└── TIME_TRACKING.md        # Seu relatório de tempo investido
 ```
 
-**Create Deliverable**:
+**Criar o entregável**:
 
 ```bash
-# From project root
+# Na raiz do projeto
 zip -r financial-batch-processor.zip . \
   -x "*.terraform/*" \
   -x "*/target/*" \
@@ -511,34 +499,34 @@ zip -r financial-batch-processor.zip . \
   -x "*.tfstate*" \
   -x "*/.git/*"
 
-# Verify contents
+# Verificar conteúdo
 unzip -l financial-batch-processor.zip
 ```
 
-## Success Criteria
+## Critérios de sucesso
 
-- [ ] All functional requirements met
-- [ ] All non-functional requirements met
-- [ ] Clean, well-documented code
-- [ ] Successful live execution
-- [ ] Clear explanation of architecture
-- [ ] Demonstrated understanding of all code
-- [ ] Professional presentation
-- [ ] Time tracking reported
+- [ ] Todos os requisitos funcionais atendidos
+- [ ] Todos os requisitos não funcionais atendidos
+- [ ] Código limpo e bem documentado
+- [ ] Execução ao vivo bem-sucedida
+- [ ] Explicação clara da arquitetura
+- [ ] Compreensão de todo o código demonstrada
+- [ ] Apresentação profissional
+- [ ] Acompanhamento de tempo informado
 
-## Final Checklist
+## Checklist final
 
-Before the demo:
+Antes da demo:
 
-- [ ] Practice the demo at least twice
-- [ ] Verify all AWS resources are running
-- [ ] Test all commands in the script
-- [ ] Prepare answers to likely questions
-- [ ] Have backup screenshots ready
-- [ ] Charge laptop and have charger
-- [ ] Test screen sharing if remote
-- [ ] Review all code one final time
-- [ ] Prepare time tracking report
-- [ ] Create deliverable zip file
+- [ ] Ensaiar a demo pelo menos duas vezes
+- [ ] Verificar se todos os recursos AWS estão ativos
+- [ ] Testar todos os comandos do roteiro
+- [ ] Preparar respostas para perguntas prováveis
+- [ ] Ter capturas de tela de backup
+- [ ] Carregar o notebook e ter o carregador
+- [ ] Testar compartilhamento de tela se for remoto
+- [ ] Revisar todo o código uma última vez
+- [ ] Preparar relatório de acompanhamento de tempo
+- [ ] Criar o arquivo ZIP de entrega
 
-Good luck with your demo! 🚀
+Boa sorte na sua demo! 🚀

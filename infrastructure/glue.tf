@@ -1,4 +1,4 @@
-# IAM Role for Glue Job
+# Papel IAM para o job Glue
 resource "aws_iam_role" "glue_job" {
   name = "${var.project_name}-glue-job-role-${var.environment}"
 
@@ -23,7 +23,7 @@ resource "aws_iam_role" "glue_job" {
   )
 }
 
-# Attach AWS managed Glue service policy
+# Anexa política gerenciada AWS do serviço Glue
 resource "aws_iam_role_policy_attachment" "glue_service" {
   role       = aws_iam_role.glue_job.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"
@@ -64,7 +64,7 @@ resource "aws_iam_role_policy" "glue_s3_access" {
   })
 }
 
-# Custom policy for DynamoDB access
+# Política customizada para acesso ao DynamoDB
 resource "aws_iam_role_policy" "glue_dynamodb_access" {
   name = "${var.project_name}-glue-dynamodb-access"
   role = aws_iam_role.glue_job.id
@@ -90,7 +90,7 @@ resource "aws_iam_role_policy" "glue_dynamodb_access" {
   })
 }
 
-# Custom policy for OpenSearch access
+# Política customizada para acesso ao OpenSearch
 resource "aws_iam_role_policy" "glue_opensearch_access" {
   name = "${var.project_name}-glue-opensearch-access"
   role = aws_iam_role.glue_job.id
@@ -117,7 +117,7 @@ resource "aws_iam_role_policy" "glue_opensearch_access" {
   })
 }
 
-# Custom policy for CloudWatch Logs
+# Política customizada para CloudWatch Logs
 resource "aws_iam_role_policy" "glue_cloudwatch_logs" {
   name = "${var.project_name}-glue-cloudwatch-logs"
   role = aws_iam_role.glue_job.id
@@ -140,7 +140,7 @@ resource "aws_iam_role_policy" "glue_cloudwatch_logs" {
   })
 }
 
-# CloudWatch Log Group for Glue Job
+# Grupo de log CloudWatch para o job Glue
 resource "aws_cloudwatch_log_group" "glue_job" {
   name              = "/aws-glue/jobs/${var.glue_job_name}"
   retention_in_days = 7
@@ -148,7 +148,7 @@ resource "aws_cloudwatch_log_group" "glue_job" {
   tags = local.common_tags
 }
 
-# Glue Job
+# Job Glue
 resource "aws_glue_job" "financial_transaction_processor" {
   name              = var.glue_job_name
   role_arn          = aws_iam_role.glue_job.arn
@@ -175,7 +175,7 @@ resource "aws_glue_job" "financial_transaction_processor" {
     "--job-bookmark-option"              = "job-bookmark-disable"
     "--TempDir"                          = "s3://${aws_s3_bucket.glue_scripts.bucket}/temp/"
 
-    # Job-specific parameters (can be overridden at runtime)
+    # Parâmetros específicos do job (podem ser sobrescritos em tempo de execução)
     "--s3_bucket"           = aws_s3_bucket.transactions.bucket
     "--dynamodb_table"      = aws_dynamodb_table.customer_registration.name
     "--opensearch_endpoint" = aws_opensearch_domain.financial_transactions.endpoint
@@ -191,7 +191,7 @@ resource "aws_glue_job" "financial_transaction_processor" {
     local.common_tags,
     {
       Name    = "${var.project_name}-glue-job"
-      Purpose = "Process and enrich financial transactions"
+      Purpose = "Processar e enriquecer transações financeiras"
     }
   )
 
@@ -204,7 +204,7 @@ resource "aws_glue_job" "financial_transaction_processor" {
   ]
 }
 
-# CloudWatch Alarms for Glue Job
+# Alarmes CloudWatch para o job Glue
 resource "aws_cloudwatch_metric_alarm" "glue_job_failure" {
   alarm_name          = "${var.glue_job_name}-failure"
   comparison_operator = "GreaterThanThreshold"
@@ -225,15 +225,15 @@ resource "aws_cloudwatch_metric_alarm" "glue_job_failure" {
   tags = local.common_tags
 }
 
-# Glue Catalog Database (optional - for data catalog)
+# Banco de dados do catálogo Glue (opcional - para catálogo de dados)
 resource "aws_glue_catalog_database" "financial_data" {
   name        = "${var.project_name}_${var.environment}"
-  description = "Glue catalog database for financial transaction data"
+  description = "Banco de dados do catálogo Glue para dados de transações financeiras"
 
   tags = local.common_tags
 }
 
-# Glue Crawler for S3 data (optional - for automatic schema discovery)
+# Crawler Glue para dados no S3 (opcional - para descoberta automática de esquema)
 resource "aws_glue_crawler" "transactions" {
   name          = "${var.project_name}-transactions-crawler"
   role          = aws_iam_role.glue_job.arn

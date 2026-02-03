@@ -1,228 +1,205 @@
-# Development Time Tracking
+# Acompanhamento de tempo de desenvolvimento
 
-## Project: AWS Glue Batch Processing Pipeline
+## Projeto: Pipeline de processamento em lote AWS Glue
 
-### Time Investment Report
+### Relatório de tempo investido
 
-**Total Development Time**: \_\_\_ hours
+**Tempo total de desenvolvimento**: \_\_\_ horas
 
 ---
 
-## Breakdown by Phase
+## Detalhamento por fase
 
-### Phase 1: Planning and Architecture (\_\_ hours)
+### Fase 1: Planejamento e arquitetura (\_\_ horas)
 
-- [ ] Requirements analysis
-- [ ] Architecture design
-- [ ] Technology selection
-- [ ] Project structure planning
+- [ ] Análise de requisitos
+- [ ] Projeto da arquitetura
+- [ ] Seleção de tecnologias
+- [ ] Planejamento da estrutura do projeto
 
-### Phase 2: Infrastructure as Code (\_\_ hours)
+### Fase 2: Infraestrutura como código (\_\_ horas)
 
-- [ ] Terraform configuration setup
-- [ ] S3 bucket configuration
-- [ ] DynamoDB table setup
-- [ ] OpenSearch domain configuration
-- [ ] Glue Job infrastructure
-- [ ] IAM roles and policies
-- [ ] Testing and debugging infrastructure
+- [ ] Configuração do Terraform
+- [ ] Configuração dos buckets S3
+- [ ] Configuração da tabela DynamoDB
+- [ ] Configuração do domínio OpenSearch
+- [ ] Infraestrutura do job Glue
+- [ ] Papéis e políticas IAM
+- [ ] Testes e depuração da infraestrutura
 
-### Phase 3: Glue Job Development (\_\_ hours)
+### Fase 3: Desenvolvimento do job Glue (\_\_ horas)
 
-- [ ] SBT project setup
-- [ ] Data model implementation
-- [ ] DynamoDB enricher development
-- [ ] OpenSearch sink implementation
-- [ ] Main processor logic
-- [ ] MapPartitions implementation
-- [ ] Error handling and retry logic
-- [ ] Testing and debugging
+- [ ] Configuração do projeto SBT
+- [ ] Implementação dos modelos de dados
+- [ ] Desenvolvimento do enricher DynamoDB
+- [ ] Implementação do sink OpenSearch
+- [ ] Lógica do processador principal
+- [ ] Implementação MapPartitions
+- [ ] Tratamento de erros e lógica de retry
+- [ ] Testes e depuração
 
-### Phase 4: Data Generation Scripts (\_\_ hours)
+### Fase 4: Scripts de geração de dados (\_\_ horas)
 
-- [ ] Customer data generator
-- [ ] Transaction data generator
-- [ ] Testing data generation
-- [ ] Validation scripts
+- [ ] Gerador de dados de clientes
+- [ ] Gerador de dados de transações
+- [ ] Testes da geração de dados
+- [ ] Scripts de validação
 
-### Phase 5: Documentation (\_\_ hours)
+### Fase 5: Documentação (\_\_ horas)
 
 - [ ] README.md
-- [ ] Architecture documentation
-- [ ] Deployment guide
-- [ ] Demo preparation guide
-- [ ] Code comments and inline documentation
+- [ ] Documentação da arquitetura
+- [ ] Guia de implantação
+- [ ] Guia de preparação para demo
+- [ ] Comentários e documentação inline no código
 
-### Phase 6: Testing and Validation (\_\_ hours)
+### Fase 6: Testes e validação (\_\_ horas)
 
-- [ ] Infrastructure deployment testing
-- [ ] Data generation testing
-- [ ] Glue Job execution testing
-- [ ] End-to-end pipeline testing
-- [ ] Performance optimization
-- [ ] Bug fixes
+- [ ] Testes de implantação da infraestrutura
+- [ ] Testes de geração de dados
+- [ ] Testes de execução do job Glue
+- [ ] Testes de ponta a ponta do pipeline
+- [ ] Otimização de desempenho
+- [ ] Correção de bugs
 
-### Phase 7: Demo Preparation (\_\_ hours)
+### Fase 7: Preparação para demo (\_\_ horas)
 
-- [ ] Demo script preparation
-- [ ] Practice runs
-- [ ] Q&A preparation
-- [ ] Deliverable packaging
-
----
-
-## Daily Log
-
-### Day 1 (Date: **\_\_**)
-
-- **Hours**: \_\_\_
-- **Activities**:
-  -
-  -
-- **Challenges**:
-  -
-- **Progress**:
-  -
-
-### Day 2 (Date: **\_\_**)
-
-- **Hours**: \_\_\_
-- **Activities**:
-  -
-  -
-- **Challenges**:
-  -
-- **Progress**:
-  -
-
-### Day 3 (Date: **\_\_**)
-
-- **Hours**: \_\_\_
-- **Activities**:
-  -
-  -
-- **Challenges**:
-  -
-- **Progress**:
-  -
-
-### Day 4 (Date: **\_\_**)
-
-- **Hours**: \_\_\_
-- **Activities**:
-  -
-  -
-- **Challenges**:
-  -
-- **Progress**:
-  -
-
-### Day 5 (Date: **\_\_**)
-
-- **Hours**: \_\_\_
-- **Activities**:
-  -
-  -
-- **Challenges**:
-  -
-- **Progress**:
-  -
-
-### Day 6 (Date: **\_\_**)
-
-- **Hours**: \_\_\_
-- **Activities**:
-  -
-  -
-- **Challenges**:
-  -
-- **Progress**:
-  -
-
-### Day 7 (Date: **\_\_**)
-
-- **Hours**: \_\_\_
-- **Activities**:
-  -
-  -
-- **Challenges**:
-  -
-- **Progress**:
-  -
+- [ ] Preparação do roteiro da demo
+- [ ] Ensaios
+- [ ] Preparação para Q&A
+- [ ] Empacotamento do entregável
 
 ---
 
-## Key Learnings
+## Registro diário
 
-### Technical Skills Developed
+### Dia 1 (Data: **\_\_**)
 
--
--
--
+- **Horas**: \_\_\_
+- ## **Atividades**:
+  -
+- ## **Desafios**:
+- ## **Progresso**:
 
-### Challenges Overcome
+### Dia 2 (Data: **\_\_**)
 
--
--
--
+- **Horas**: \_\_\_
+- ## **Atividades**:
+  -
+- ## **Desafios**:
+- ## **Progresso**:
 
-### Best Practices Applied
+### Dia 3 (Data: **\_\_**)
 
--
--
--
+- **Horas**: \_\_\_
+- ## **Atividades**:
+  -
+- ## **Desafios**:
+- ## **Progresso**:
 
----
+### Dia 4 (Data: **\_\_**)
 
-## Code Statistics
+- **Horas**: \_\_\_
+- ## **Atividades**:
+  -
+- ## **Desafios**:
+- ## **Progresso**:
 
-- **Total Files Created**: 26+
-- **Lines of Code**:
-  - Scala: ~\_\_\_ lines
-  - Python: ~\_\_\_ lines
-  - Terraform: ~\_\_\_ lines
-  - Documentation: ~\_\_\_ lines
+### Dia 5 (Data: **\_\_**)
 
----
+- **Horas**: \_\_\_
+- ## **Atividades**:
+  -
+- ## **Desafios**:
+- ## **Progresso**:
 
-## Demo Presentation Notes
+### Dia 6 (Data: **\_\_**)
 
-### Key Points to Highlight
+- **Horas**: \_\_\_
+- ## **Atividades**:
+  -
+- ## **Desafios**:
+- ## **Progresso**:
 
-1. MapPartitions implementation for batch processing
-2. DynamoDB batch-get optimization
-3. OpenSearch bulk indexing
-4. Error handling and retry mechanisms
-5. Infrastructure as Code approach
-6. Data partitioning strategy
-7. Type-safe Scala implementation
+### Dia 7 (Data: **\_\_**)
 
-### Questions Prepared For
-
-1. Why MapPartitions vs map?
-2. How to handle missing customer data?
-3. Scalability considerations
-4. Error recovery strategies
-5. Cost optimization approaches
-6. Security implementations
-7. Performance metrics
-
----
-
-## Final Checklist
-
-- [ ] All code reviewed and understood
-- [ ] Infrastructure successfully deployed
-- [ ] Test data generated (1000+ transactions, 20+ accounts)
-- [ ] Glue Job executed successfully
-- [ ] Data verified in OpenSearch
-- [ ] Documentation complete
-- [ ] Demo practiced
-- [ ] Time tracking completed
-- [ ] Deliverable ZIP created
-- [ ] Ready for presentation
+- **Horas**: \_\_\_
+- ## **Atividades**:
+  -
+- ## **Desafios**:
+- ## **Progresso**:
 
 ---
 
-**Signature**: ******\_\_\_******
-**Date**: ******\_\_\_******
+## Aprendizados principais
+
+### Habilidades técnicas desenvolvidas
+
+-
+-
+-
+
+### Desafios superados
+
+-
+-
+-
+
+### Boas práticas aplicadas
+
+-
+-
+- ***
+
+## Estatísticas de código
+
+- **Total de arquivos criados**: 26+
+- **Linhas de código**:
+  - Scala: ~\_\_\_ linhas
+  - Python: ~\_\_\_ linhas
+  - Terraform: ~\_\_\_ linhas
+  - Documentação: ~\_\_\_ linhas
+
+---
+
+## Notas para apresentação da demo
+
+### Pontos a destacar
+
+1. Implementação MapPartitions para processamento em lote
+2. Otimização batch-get no DynamoDB
+3. Indexação em massa no OpenSearch
+4. Tratamento de erros e mecanismos de retry
+5. Abordagem de infraestrutura como código
+6. Estratégia de particionamento de dados
+7. Implementação em Scala com segurança de tipos
+
+### Perguntas preparadas
+
+1. Por que MapPartitions em vez de map?
+2. Como tratar dados de cliente ausentes?
+3. Considerações de escalabilidade
+4. Estratégias de recuperação de erros
+5. Abordagens de otimização de custos
+6. Implementações de segurança
+7. Métricas de desempenho
+
+---
+
+## Checklist final
+
+- [ ] Todo o código revisado e compreendido
+- [ ] Infraestrutura implantada com sucesso
+- [ ] Dados de teste gerados (1000+ transações, 20+ contas)
+- [ ] Job Glue executado com sucesso
+- [ ] Dados verificados no OpenSearch
+- [ ] Documentação completa
+- [ ] Demo ensaiada
+- [ ] Acompanhamento de tempo concluído
+- [ ] ZIP de entrega criado
+- [ ] Pronto para apresentação
+
+---
+
+**Assinatura**: **\*\***\_\_\_**\*\***
+**Data**: **\*\***\_\_\_**\*\***

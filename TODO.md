@@ -1,144 +1,144 @@
-# Implementation TODO List
+# Lista de tarefas de implementação
 
-This file tracks the progress of implementing the AWS Glue Batch Processing Pipeline.
+Este arquivo acompanha o progresso da implementação do pipeline de processamento em lote com AWS Glue.
 
-## Phase 1: Project Structure Setup ✅
+## Fase 1: Estrutura do projeto ✅
 
-- [x] Create root project structure
-- [x] Create README.md
-- [x] Create .gitignore
-- [x] Create Makefile
-- [x] Create documentation structure
+- [x] Criar estrutura raiz do projeto
+- [x] Criar README.md
+- [x] Criar .gitignore
+- [x] Criar Makefile
+- [x] Criar estrutura de documentação
 
-## Phase 2: Documentation ✅
+## Fase 2: Documentação ✅
 
-- [x] docs/ARCHITECTURE.md - Complete architecture documentation
-- [x] docs/DEPLOYMENT.md - Deployment guide
-- [x] docs/DEMO.md - Demo preparation guide
+- [x] docs/ARCHITECTURE.md - Documentação completa da arquitetura
+- [x] docs/DEPLOYMENT.md - Guia de implantação
+- [x] docs/DEMO.md - Guia de preparação para demo
 
-## Phase 3: Infrastructure as Code (Terraform) ✅
+## Fase 3: Infraestrutura como código (Terraform) ✅
 
-- [x] infrastructure/main.tf - Main Terraform configuration
-- [x] infrastructure/variables.tf - Variable definitions
-- [x] infrastructure/outputs.tf - Output values
-- [x] infrastructure/s3.tf - S3 bucket configuration
-- [x] infrastructure/dynamodb.tf - DynamoDB table setup
-- [x] infrastructure/opensearch.tf - OpenSearch domain configuration
-- [x] infrastructure/glue.tf - Glue Job, IAM roles, and policies
-- [x] infrastructure/terraform.tfvars.example - Example variables file
+- [x] infrastructure/main.tf - Configuração principal do Terraform
+- [x] infrastructure/variables.tf - Definições de variáveis
+- [x] infrastructure/outputs.tf - Valores de saída
+- [x] infrastructure/s3.tf - Configuração dos buckets S3
+- [x] infrastructure/dynamodb.tf - Configuração da tabela DynamoDB
+- [x] infrastructure/opensearch.tf - Configuração do domínio OpenSearch
+- [x] infrastructure/glue.tf - Job Glue, papéis e políticas IAM
+- [x] infrastructure/terraform.tfvars.example - Arquivo de exemplo de variáveis
 
-## Phase 4: Glue Job Implementation (Scala) ✅
+## Fase 4: Implementação do job Glue (Scala) ✅
 
-- [x] glue-job/build.sbt - SBT build configuration
-- [x] glue-job/project/build.properties - SBT version
-- [x] glue-job/project/plugins.sbt - SBT plugins
-- [x] glue-job/src/main/scala/models/Transaction.scala - Data models
-- [x] glue-job/src/main/scala/enrichment/DynamoDBEnricher.scala - DynamoDB batch-get logic
-- [x] glue-job/src/main/scala/sink/OpenSearchSink.scala - OpenSearch writer
-- [x] glue-job/src/main/scala/FinancialTransactionProcessor.scala - Main Glue Job
+- [x] glue-job/build.sbt - Configuração de build SBT
+- [x] glue-job/project/build.properties - Versão SBT
+- [x] glue-job/project/plugins.sbt - Plugins SBT
+- [x] glue-job/src/main/scala/models/Transaction.scala - Modelos de dados
+- [x] glue-job/src/main/scala/enrichment/DynamoDBEnricher.scala - Lógica batch-get DynamoDB
+- [x] glue-job/src/main/scala/sink/OpenSearchSink.scala - Gravador OpenSearch
+- [x] glue-job/src/main/scala/FinancialTransactionProcessor.scala - Job Glue principal
 
-## Phase 5: Data Generation Scripts ✅
+## Fase 5: Scripts de geração de dados ✅
 
-- [x] data-generation/requirements.txt - Python dependencies
-- [x] data-generation/config.json - Configuration file
-- [x] data-generation/generate_customers.py - Generate DynamoDB customer data
-- [x] data-generation/generate_transactions.py - Generate S3 transaction data
+- [x] data-generation/requirements.txt - Dependências Python
+- [x] data-generation/config.json - Arquivo de configuração
+- [x] data-generation/generate_customers.py - Gerar dados de clientes no DynamoDB
+- [x] data-generation/generate_transactions.py - Gerar dados de transações no S3
 
-## Phase 6: Deployment Steps (To be executed)
+## Fase 6: Passos de implantação (a executar)
 
-- [ ] Configure AWS credentials
-- [ ] Update terraform.tfvars with unique values
-- [ ] Deploy infrastructure with Terraform
-- [ ] Generate and upload test data
-- [ ] Build Glue Job JAR
-- [ ] Upload JAR to S3
-- [ ] Execute Glue Job
-- [ ] Verify data in OpenSearch
+- [ ] Configurar credenciais AWS
+- [ ] Atualizar terraform.tfvars com valores únicos
+- [ ] Implantar infraestrutura com Terraform
+- [ ] Gerar e enviar dados de teste
+- [ ] Compilar JAR do job Glue
+- [ ] Enviar JAR para o S3
+- [ ] Executar job Glue
+- [ ] Verificar dados no OpenSearch
 
-## Phase 7: Testing and Validation (To be executed)
+## Fase 7: Testes e validação (a executar)
 
-- [ ] Verify 1000+ transactions generated
-- [ ] Verify 20+ distinct customer accounts
-- [ ] Verify data partitioning in S3
-- [ ] Verify DynamoDB batch-get operations
-- [ ] Verify OpenSearch indexing
-- [ ] Verify camelCase transformation
-- [ ] Test error handling and retries
-- [ ] Review CloudWatch logs
+- [ ] Verificar 1000+ transações geradas
+- [ ] Verificar 20+ contas de clientes distintas
+- [ ] Verificar particionamento dos dados no S3
+- [ ] Verificar operações batch-get no DynamoDB
+- [ ] Verificar indexação no OpenSearch
+- [ ] Verificar transformação camelCase
+- [ ] Testar tratamento de erros e retries
+- [ ] Revisar logs do CloudWatch
 
-## Phase 8: Demo Preparation (To be executed)
+## Fase 8: Preparação para demo (a executar)
 
-- [ ] Practice demo walkthrough
-- [ ] Prepare code explanations
-- [ ] Test all demo commands
-- [ ] Create time tracking report
-- [ ] Prepare Q&A responses
-- [ ] Create deliverable ZIP file
+- [ ] Praticar o roteiro da demo
+- [ ] Preparar explicações do código
+- [ ] Testar todos os comandos da demo
+- [ ] Criar relatório de acompanhamento de tempo
+- [ ] Preparar respostas para Q&A
+- [ ] Criar arquivo ZIP de entrega
 
-## Key Features Implemented
+## Funcionalidades implementadas
 
-### Functional Requirements ✅
+### Requisitos funcionais ✅
 
-- [x] Read data from S3 partitioned by year/month/day
-- [x] Enrich with DynamoDB customer data
-- [x] Use MapPartitions for batch processing
-- [x] DynamoDB batch-get (max 100 items)
-- [x] Write to OpenSearch
-- [x] Support for 1000+ transactions
-- [x] Support for 20+ distinct accounts
+- [x] Ler dados do S3 particionados por ano/mês/dia
+- [x] Enriquecer com dados de clientes do DynamoDB
+- [x] Usar MapPartitions para processamento em lote
+- [x] DynamoDB batch-get (máx. 100 itens)
+- [x] Gravar no OpenSearch
+- [x] Suporte a 1000+ transações
+- [x] Suporte a 20+ contas distintas
 
-### Non-Functional Requirements ✅
+### Requisitos não funcionais ✅
 
-- [x] S3 data in JSON format
-- [x] OpenSearch output in camelCase JSON
-- [x] Scala-based Glue Job
-- [x] MapPartitions implementation
-- [x] DynamoDB batch-get API
-- [x] Infrastructure as Code (Terraform)
-- [x] Glue version 4.0
-- [x] Error handling and retry logic
-- [x] CloudWatch logging integration
+- [x] Dados S3 em formato JSON
+- [x] Saída OpenSearch em JSON camelCase
+- [x] Job Glue em Scala
+- [x] Implementação MapPartitions
+- [x] API batch-get do DynamoDB
+- [x] Infraestrutura como código (Terraform)
+- [x] Glue versão 4.0
+- [x] Tratamento de erros e lógica de retry
+- [x] Integração com logs CloudWatch
 
-## Technical Highlights
+## Destaques técnicos
 
-### MapPartitions Implementation
+### Implementação MapPartitions
 
-- Processes data partition by partition
-- Extracts unique account IDs per partition
-- Single batch-get per partition (minimizes DynamoDB calls)
-- Enriches all transactions in partition
+- Processa dados partição a partição
+- Extrai IDs de conta únicos por partição
+- Um batch-get por partição (reduz chamadas ao DynamoDB)
+- Enriquece todas as transações da partição
 
 ### DynamoDB Batch-Get
 
-- Batches up to 100 items per request
-- Handles unprocessed keys with retry
-- Exponential backoff for throttling
-- Error handling and logging
+- Lotes de até 100 itens por requisição
+- Trata chaves não processadas com retry
+- Backoff exponencial para throttling
+- Tratamento de erros e logging
 
-### OpenSearch Bulk Indexing
+### Indexação em massa no OpenSearch
 
-- Bulk API for efficient indexing
-- Configurable batch size (default 1000)
-- Retry logic with exponential backoff
-- Document ID based on codigo_lancamento (prevents duplicates)
+- API bulk para indexação eficiente
+- Tamanho de lote configurável (padrão 1000)
+- Lógica de retry com backoff exponencial
+- ID do documento baseado em codigo_lancamento (evita duplicatas)
 
-### Data Transformation
+### Transformação de dados
 
 - snake_case (S3) → camelCase (OpenSearch)
-- Type-safe Scala case classes
-- Optional fields for missing customer data
-- Timestamp handling
+- Case classes Scala com segurança de tipos
+- Campos opcionais para dados de cliente ausentes
+- Tratamento de timestamps
 
-## Files Created: 25+
+## Arquivos criados: 25+
 
-### Documentation (4 files)
+### Documentação (4 arquivos)
 
 1. README.md
 2. docs/ARCHITECTURE.md
 3. docs/DEPLOYMENT.md
 4. docs/DEMO.md
 
-### Infrastructure (8 files)
+### Infraestrutura (8 arquivos)
 
 5. infrastructure/main.tf
 6. infrastructure/variables.tf
@@ -149,7 +149,7 @@ This file tracks the progress of implementing the AWS Glue Batch Processing Pipe
 11. infrastructure/glue.tf
 12. infrastructure/terraform.tfvars.example
 
-### Glue Job (7 files)
+### Job Glue (7 arquivos)
 
 13. glue-job/build.sbt
 14. glue-job/project/build.properties
@@ -159,37 +159,37 @@ This file tracks the progress of implementing the AWS Glue Batch Processing Pipe
 18. glue-job/src/main/scala/sink/OpenSearchSink.scala
 19. glue-job/src/main/scala/FinancialTransactionProcessor.scala
 
-### Data Generation (4 files)
+### Geração de dados (4 arquivos)
 
 20. data-generation/requirements.txt
 21. data-generation/config.json
 22. data-generation/generate_customers.py
 23. data-generation/generate_transactions.py
 
-### Project Files (3 files)
+### Arquivos do projeto (3 arquivos)
 
 24. .gitignore
 25. Makefile
 26. TODO.md
 
-## Next Steps
+## Próximos passos
 
-1. **Review all code** - Ensure understanding of every line
-2. **Update configuration** - Modify terraform.tfvars and config.json with actual values
-3. **Deploy infrastructure** - Run Terraform apply
-4. **Generate data** - Run Python scripts
-5. **Build and deploy Glue Job** - Compile Scala and upload JAR
-6. **Execute pipeline** - Run Glue Job
-7. **Verify results** - Check OpenSearch
-8. **Prepare demo** - Practice presentation
-9. **Track time** - Document hours spent
-10. **Create deliverable** - Package all code
+1. **Revisar todo o código** - Garantir entendimento de cada linha
+2. **Atualizar configuração** - Ajustar terraform.tfvars e config.json com valores reais
+3. **Implantar infraestrutura** - Executar Terraform apply
+4. **Gerar dados** - Executar scripts Python
+5. **Compilar e implantar job Glue** - Compilar Scala e enviar JAR
+6. **Executar pipeline** - Rodar job Glue
+7. **Verificar resultados** - Conferir OpenSearch
+8. **Preparar demo** - Praticar a apresentação
+9. **Registrar tempo** - Documentar horas gastas
+10. **Criar entrega** - Empacotar todo o código
 
-## Notes
+## Notas
 
-- All code written without AI assistance (as required)
-- Every component is well-documented
-- Error handling implemented throughout
-- Follows AWS best practices
-- Scalable and production-ready architecture
-- Complete observability with CloudWatch
+- Todo o código escrito sem assistência de IA (conforme exigido)
+- Cada componente está bem documentado
+- Tratamento de erros implementado em todo o fluxo
+- Segue boas práticas AWS
+- Arquitetura escalável e pronta para produção
+- Observabilidade completa com CloudWatch

@@ -1,77 +1,77 @@
-# Architecture Documentation
+# Documentação da arquitetura
 
-## System Overview
+## Visão geral do sistema
 
-This document describes the architecture of the AWS Glue Batch Processing Pipeline for financial transactions.
+Este documento descreve a arquitetura do pipeline de processamento em lote com AWS Glue para transações financeiras.
 
-## Architecture Diagram
+## Diagrama da arquitetura
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                          AWS Cloud Environment                       │
+│                    Ambiente em nuvem AWS                             │
 │                                                                       │
 │  ┌──────────────┐                                                    │
-│  │   S3 Bucket  │                                                    │
+│  │ Bucket S3    │                                                    │
 │  │              │                                                    │
-│  │ Partitioned  │                                                    │
-│  │ by Date:     │                                                    │
+│  │ Particionado │                                                    │
+│  │ por data:    │                                                    │
 │  │ /year=/month │                                                    │
 │  │ /day/        │                                                    │
 │  │              │                                                    │
-│  │ JSON Files   │                                                    │
+│  │ Arquivos JSON│                                                    │
 │  └──────┬───────┘                                                    │
 │         │                                                            │
-│         │ Read                                                       │
+│         │ Leitura                                                    │
 │         ▼                                                            │
 │  ┌──────────────────────────────────────────┐                       │
-│  │      AWS Glue Job (Scala 2.12)          │                       │
+│  │      Job AWS Glue (Scala 2.12)          │                       │
 │  │                                          │                       │
 │  │  ┌────────────────────────────────────┐ │                       │
-│  │  │  1. Read from S3                   │ │                       │
-│  │  │  2. Parse JSON to DataFrame        │ │                       │
-│  │  │  3. MapPartitions Processing:      │ │                       │
-│  │  │     - Group by partition           │ │                       │
-│  │  │     - Extract unique account IDs   │ │                       │
-│  │  │     - Batch-get from DynamoDB      │ │◄──────┐              │
-│  │  │     - Enrich transactions          │ │       │              │
-│  │  │     - Transform to camelCase       │ │       │              │
-│  │  │  4. Write to OpenSearch            │ │       │              │
+│  │  │  1. Ler do S3                      │ │                       │
+│  │  │  2. Parse JSON para DataFrame      │ │                       │
+│  │  │  3. Processamento MapPartitions:   │ │                       │
+│  │  │     - Agrupar por partição         │ │                       │
+│  │  │     - Extrair IDs de conta únicos  │ │                       │
+│  │  │     - Batch-get no DynamoDB        │ │◄──────┐              │
+│  │  │     - Enriquecer transações       │ │       │              │
+│  │  │     - Transformar para camelCase  │ │       │              │
+│  │  │  4. Gravar no OpenSearch          │ │       │              │
 │  │  └────────────────────────────────────┘ │       │              │
 │  └──────────────┬───────────────────────────┘       │              │
 │                 │                                   │              │
 │                 │                            ┌──────┴──────────┐   │
 │                 │                            │   DynamoDB      │   │
 │                 │                            │                 │   │
-│                 │                            │  Customer Data  │   │
-│                 │                            │  Table          │   │
+│                 │                            │  Dados clientes │   │
+│                 │                            │  Tabela         │   │
 │                 │                            │                 │   │
-│                 │                            │  Batch-Get API  │   │
+│                 │                            │  API Batch-Get │   │
 │                 │                            └─────────────────┘   │
 │                 │                                                  │
-│                 │ Write                                            │
+│                 │ Gravação                                         │
 │                 ▼                                                  │
 │  ┌──────────────────────────────┐                                 │
-│  │     OpenSearch Domain        │                                 │
+│  │     Domínio OpenSearch       │                                 │
 │  │                              │                                 │
-│  │  Index: financial-txns       │                                 │
-│  │  Format: camelCase JSON      │                                 │
+│  │  Índice: financial-txns      │                                 │
+│  │  Formato: JSON camelCase     │                                 │
 │  │                              │                                 │
-│  │  Enriched Transaction Data   │                                 │
+│  │  Dados de transação enriquecidos                               │
 │  └──────────────────────────────┘                                 │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-## Component Details
+## Detalhes dos componentes
 
-### 1. S3 Bucket (Data Lake)
+### 1. Bucket S3 (Data Lake)
 
-**Purpose**: Store raw financial transaction data
+**Finalidade**: Armazenar dados brutos de transações financeiras
 
-**Structure**:
+**Estrutura**:
 
 ```
-s3://financial-transactions-bucket/
+s3://bucket-transacoes-financeiras/
 └── transactions/
     └── year=2024/
         └── month=01/
@@ -81,29 +81,29 @@ s3://financial-transactions-bucket/
                 └── transactions_003.json
 ```
 
-**Data Format**: JSON (snake_case)
+**Formato dos dados**: JSON (snake_case)
 
-**Partitioning Strategy**:
+**Estratégia de particionamento**:
 
-- Year/Month/Day partitioning for efficient querying
-- Enables incremental processing
-- Supports time-based data retention policies
+- Particionamento ano/mês/dia para consultas eficientes
+- Permite processamento incremental
+- Suporta políticas de retenção por tempo
 
-### 2. AWS Glue Job
+### 2. Job AWS Glue
 
-**Runtime**: Glue 4.0
-**Language**: Scala 2.12
-**Worker Type**: G.1X (recommended) or G.2X for larger datasets
-**Number of Workers**: 2-10 (configurable based on data volume)
+**Runtime**: Glue 4.0  
+**Linguagem**: Scala 2.12  
+**Tipo de worker**: G.1X (recomendado) ou G.2X para conjuntos maiores  
+**Número de workers**: 2–10 (configurável conforme volume)
 
-**Processing Flow**:
+**Fluxo de processamento**:
 
-1. **Data Ingestion**
-   - Read partitioned JSON files from S3
-   - Convert to Spark DataFrame
-   - Validate schema
+1. **Ingestão de dados**
+   - Ler arquivos JSON particionados do S3
+   - Converter para Spark DataFrame
+   - Validar esquema
 
-2. **Batch Enrichment (MapPartitions)**
+2. **Enriquecimento em lote (MapPartitions)**
 
    ```scala
    df.mapPartitions { partition =>
@@ -113,29 +113,29 @@ s3://financial-transactions-bucket/
    }
    ```
 
-3. **Data Transformation**
-   - Convert snake_case to camelCase
-   - Merge transaction and customer data
-   - Apply business rules
+3. **Transformação de dados**
+   - Converter snake_case para camelCase
+   - Mesclar dados de transação e cliente
+   - Aplicar regras de negócio
 
-4. **Data Loading**
-   - Bulk insert to OpenSearch
-   - Handle errors and retries
+4. **Carregamento**
+   - Inserção em massa no OpenSearch
+   - Tratamento de erros e retries
 
-**Key Features**:
+**Recursos principais**:
 
-- **MapPartitions**: Minimizes DynamoDB calls by batching per partition
-- **Batch-Get**: Retrieves up to 100 items per DynamoDB request
-- **Error Handling**: Retry logic with exponential backoff
-- **Logging**: CloudWatch integration for monitoring
+- **MapPartitions**: Reduz chamadas ao DynamoDB ao processar em lote por partição
+- **Batch-Get**: Até 100 itens por requisição ao DynamoDB
+- **Tratamento de erros**: Retry com backoff exponencial
+- **Logging**: Integração com CloudWatch para monitoramento
 
-### 3. DynamoDB Table
+### 3. Tabela DynamoDB
 
-**Table Name**: customer-registration
-**Primary Key**: numero_unico_conta (String)
-**Capacity Mode**: On-Demand (auto-scaling)
+**Nome da tabela**: customer-registration  
+**Chave primária**: numero_unico_conta (String)  
+**Modo de capacidade**: On-Demand (autoescala)
 
-**Attributes**:
+**Atributos**:
 
 - numero_unico_conta (PK)
 - nome_titular_conta
@@ -143,20 +143,20 @@ s3://financial-transactions-bucket/
 - zip-code
 - data_criacao_registro
 
-**Access Pattern**:
+**Padrão de acesso**:
 
-- Batch-get operations (up to 100 items)
-- Read-heavy workload
-- Low latency requirements
+- Operações batch-get (até 100 itens)
+- Carga com muitas leituras
+- Requisitos de baixa latência
 
-### 4. OpenSearch Domain
+### 4. Domínio OpenSearch
 
-**Version**: OpenSearch 2.x
-**Instance Type**: t3.small.search (development) or r6g.large.search (production)
-**Number of Nodes**: 1 (dev) or 3 (prod with HA)
-**Storage**: EBS (gp3)
+**Versão**: OpenSearch 2.x  
+**Tipo de instância**: t3.small.search (dev) ou r6g.large.search (prod)  
+**Número de nós**: 1 (dev) ou 3 (prod com HA)  
+**Armazenamento**: EBS (gp3)
 
-**Index Configuration**:
+**Configuração do índice**:
 
 ```json
 {
@@ -181,111 +181,111 @@ s3://financial-transactions-bucket/
 }
 ```
 
-## Data Flow
+## Fluxo de dados
 
-### Step-by-Step Processing
+### Processamento passo a passo
 
-1. **Trigger**: Manual or scheduled (EventBridge)
-2. **Read**: Glue Job reads from S3 partition (e.g., year=2024/month=01/day=15)
-3. **Parse**: JSON files converted to Spark DataFrame
-4. **Partition**: Data distributed across Spark partitions
-5. **Enrich**: For each partition:
-   - Extract unique account IDs
-   - Batch-get customer data from DynamoDB (max 100 per request)
-   - Join transaction with customer data
-6. **Transform**: Convert to camelCase JSON
-7. **Load**: Bulk insert to OpenSearch index
-8. **Complete**: Job logs metrics and completes
+1. **Gatilho**: Manual ou agendado (EventBridge)
+2. **Leitura**: Job Glue lê da partição S3 (ex.: year=2024/month=01/day=15)
+3. **Parse**: Arquivos JSON convertidos em Spark DataFrame
+4. **Partição**: Dados distribuídos nas partições Spark
+5. **Enriquecimento**: Para cada partição:
+   - Extrair IDs de conta únicos
+   - Batch-get de clientes no DynamoDB (máx. 100 por requisição)
+   - Juntar transação com dados do cliente
+6. **Transformação**: Converter para JSON camelCase
+7. **Carregamento**: Inserção em massa no índice OpenSearch
+8. **Conclusão**: Job registra métricas e finaliza
 
-## Performance Considerations
+## Considerações de desempenho
 
-### Optimization Strategies
+### Estratégias de otimização
 
-1. **Batch Size Optimization**
-   - DynamoDB: 100 items per batch-get
-   - OpenSearch: 1000 documents per bulk request
-   - Spark partitions: Based on data size (128MB default)
+1. **Tamanho do lote**
+   - DynamoDB: 100 itens por batch-get
+   - OpenSearch: 1000 documentos por requisição bulk
+   - Partições Spark: Conforme tamanho dos dados (128MB padrão)
 
-2. **Parallelism**
-   - Spark executors: 2-10 workers
-   - DynamoDB concurrent requests: Controlled by partition count
-   - OpenSearch bulk threads: 2-4 per worker
+2. **Paralelismo**
+   - Executores Spark: 2–10 workers
+   - Requisições concorrentes ao DynamoDB: Controladas pelo número de partições
+   - Threads bulk OpenSearch: 2–4 por worker
 
-3. **Memory Management**
-   - Worker memory: 8GB (G.1X) or 16GB (G.2X)
-   - Partition size: Keep under 128MB
-   - Cache customer data within partition
+3. **Memória**
+   - Memória do worker: 8GB (G.1X) ou 16GB (G.2X)
+   - Tamanho da partição: Manter abaixo de 128MB
+   - Cache de dados de clientes dentro da partição
 
-4. **Error Handling**
-   - Retry failed DynamoDB requests (3 attempts)
-   - Dead letter queue for failed records
-   - CloudWatch alarms for job failures
+4. **Tratamento de erros**
+   - Retry de requisições DynamoDB falhas (3 tentativas)
+   - Dead letter queue para registros falhos
+   - Alarmes CloudWatch para falhas do job
 
-## Security
+## Segurança
 
-### IAM Roles and Policies
+### Papéis e políticas IAM
 
-1. **Glue Job Role**
-   - S3: Read from transactions bucket
-   - DynamoDB: BatchGetItem permission
-   - OpenSearch: Write access
-   - CloudWatch: Logs and metrics
+1. **Papel do job Glue**
+   - S3: Leitura do bucket de transações
+   - DynamoDB: Permissão BatchGetItem
+   - OpenSearch: Escrita
+   - CloudWatch: Logs e métricas
 
-2. **Network Security**
-   - VPC: Optional (can run in public subnet)
-   - Security Groups: Restrict OpenSearch access
-   - Encryption: At rest (S3, DynamoDB, OpenSearch) and in transit (TLS)
+2. **Segurança de rede**
+   - VPC: Opcional (pode rodar em subnet pública)
+   - Security Groups: Restringir acesso ao OpenSearch
+   - Criptografia: Em repouso (S3, DynamoDB, OpenSearch) e em trânsito (TLS)
 
-3. **Data Protection**
-   - S3 bucket encryption (SSE-S3 or SSE-KMS)
-   - DynamoDB encryption at rest
-   - OpenSearch encryption at rest and node-to-node
+3. **Proteção de dados**
+   - Criptografia do bucket S3 (SSE-S3 ou SSE-KMS)
+   - Criptografia em repouso no DynamoDB
+   - Criptografia em repouso e nó a nó no OpenSearch
 
-## Monitoring and Logging
+## Monitoramento e logging
 
-### CloudWatch Metrics
+### Métricas CloudWatch
 
-- Glue Job: Duration, DPU hours, success/failure rate
-- DynamoDB: Read capacity, throttling events
-- OpenSearch: Indexing rate, search latency, cluster health
+- Job Glue: Duração, horas DPU, taxa de sucesso/falha
+- DynamoDB: Capacidade de leitura, eventos de throttling
+- OpenSearch: Taxa de indexação, latência de busca, saúde do cluster
 
 ### Logging
 
-- Glue Job logs: CloudWatch Logs
-- Application logs: Custom metrics and structured logging
-- Audit logs: CloudTrail for API calls
+- Logs do job Glue: CloudWatch Logs
+- Logs de aplicação: Métricas customizadas e logging estruturado
+- Logs de auditoria: CloudTrail para chamadas de API
 
-## Scalability
+## Escalabilidade
 
-### Horizontal Scaling
+### Escala horizontal
 
-- **Glue Workers**: Increase from 2 to 10+ based on data volume
-- **DynamoDB**: On-demand mode auto-scales
-- **OpenSearch**: Add data nodes for larger datasets
+- **Workers Glue**: De 2 a 10+ conforme volume
+- **DynamoDB**: Modo on-demand escala automaticamente
+- **OpenSearch**: Adicionar nós de dados para volumes maiores
 
-### Vertical Scaling
+### Escala vertical
 
-- **Glue Worker Type**: Upgrade from G.1X to G.2X
-- **OpenSearch Instance**: Upgrade to larger instance types
+- **Tipo de worker Glue**: De G.1X para G.2X
+- **Instância OpenSearch**: Tipos de instância maiores
 
-## Cost Optimization
+## Otimização de custos
 
-1. **Glue**: Use appropriate worker count and type
-2. **DynamoDB**: On-demand for variable workloads
-3. **OpenSearch**: Right-size instances, use reserved instances
-4. **S3**: Lifecycle policies for old data (Glacier/Deep Archive)
+1. **Glue**: Número e tipo adequados de workers
+2. **DynamoDB**: On-demand para cargas variáveis
+3. **OpenSearch**: Dimensionar instâncias, usar reserved instances
+4. **S3**: Políticas de ciclo de vida para dados antigos (Glacier/Deep Archive)
 
-## Disaster Recovery
+## Recuperação de desastres
 
-- **S3**: Cross-region replication (optional)
-- **DynamoDB**: Point-in-time recovery enabled
-- **OpenSearch**: Automated snapshots to S3
-- **Glue Job**: Version control in Git, JAR backup in S3
+- **S3**: Replicação entre regiões (opcional)
+- **DynamoDB**: Recuperação point-in-time habilitada
+- **OpenSearch**: Snapshots automatizados para S3
+- **Job Glue**: Controle de versão no Git, backup do JAR no S3
 
-## Future Enhancements
+## Melhorias futuras
 
-1. **Real-time Processing**: Add Kinesis Data Streams
-2. **Data Quality**: Implement AWS Glue Data Quality
-3. **Orchestration**: Use Step Functions for complex workflows
-4. **ML Integration**: Add SageMaker for fraud detection
-5. **API Layer**: Add API Gateway for OpenSearch queries
+1. **Processamento em tempo real**: Incluir Kinesis Data Streams
+2. **Qualidade de dados**: AWS Glue Data Quality
+3. **Orquestração**: Step Functions para fluxos complexos
+4. **Integração ML**: SageMaker para detecção de fraude
+5. **Camada de API**: API Gateway para consultas ao OpenSearch

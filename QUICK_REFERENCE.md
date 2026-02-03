@@ -1,174 +1,174 @@
-# Quick Reference Guide
+# Guia de referência rápida
 
-This guide provides quick access to commonly used commands for the AWS Glue Batch Processing Pipeline.
+Este guia oferece acesso rápido aos comandos mais usados do pipeline de processamento em lote com AWS Glue.
 
-## Prerequisites Check
+## Verificação de pré-requisitos
 
 ```bash
-# Check AWS CLI
+# Verificar AWS CLI
 aws --version
 
-# Check Terraform
+# Verificar Terraform
 terraform --version
 
-# Check Python
+# Verificar Python
 python3 --version
 
-# Check Scala
+# Verificar Scala
 scala -version
 
-# Check SBT
+# Verificar SBT
 sbt --version
 
-# Verify AWS credentials
+# Verificar credenciais AWS
 aws sts get-caller-identity
 ```
 
-## Infrastructure Commands
+## Comandos de infraestrutura
 
 ### Terraform
 
 ```bash
-# Navigate to infrastructure directory
+# Navegar para o diretório de infraestrutura
 cd infrastructure
 
-# Initialize Terraform
+# Inicializar Terraform
 terraform init
 
-# Validate configuration
+# Validar configuração
 terraform validate
 
-# Format Terraform files
+# Formatar arquivos Terraform
 terraform fmt
 
-# Plan deployment
+# Planejar implantação
 terraform plan
 
-# Apply infrastructure
+# Aplicar infraestrutura
 terraform apply
 
-# Show current state
+# Mostrar estado atual
 terraform show
 
-# List resources
+# Listar recursos
 terraform state list
 
-# Get outputs
+# Obter outputs
 terraform output
 
-# Destroy infrastructure
+# Destruir infraestrutura
 terraform destroy
 ```
 
-### Get Specific Outputs
+### Obter outputs específicos
 
 ```bash
-# Get S3 bucket name
+# Nome do bucket S3
 terraform output -raw s3_transactions_bucket
 
-# Get Glue scripts bucket
+# Bucket de scripts do Glue
 terraform output -raw glue_scripts_bucket
 
-# Get DynamoDB table name
+# Nome da tabela DynamoDB
 terraform output -raw dynamodb_table_name
 
-# Get OpenSearch endpoint
+# Endpoint OpenSearch
 terraform output -raw opensearch_endpoint
 
-# Get Glue job name
+# Nome do job Glue
 terraform output -raw glue_job_name
 ```
 
-## Data Generation Commands
+## Comandos de geração de dados
 
-### Setup
+### Configuração
 
 ```bash
-# Navigate to data generation directory
+# Navegar para o diretório de geração de dados
 cd data-generation
 
-# Install dependencies
+# Instalar dependências
 pip install -r requirements.txt
 
-# Or with virtual environment
+# Ou com ambiente virtual
 python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # No Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Generate Data
+### Gerar dados
 
 ```bash
-# Generate customer data
+# Gerar dados de clientes
 python generate_customers.py
 
-# Generate transaction data
+# Gerar dados de transações
 python generate_transactions.py
 
-# Generate both
+# Gerar ambos
 python generate_customers.py && python generate_transactions.py
 ```
 
-### Verify Data
+### Verificar dados
 
 ```bash
-# Check DynamoDB
+# Verificar DynamoDB
 aws dynamodb scan --table-name customer-registration-dev --max-items 5
 
-# Count DynamoDB items
+# Contar itens no DynamoDB
 aws dynamodb scan --table-name customer-registration-dev --select COUNT
 
-# List S3 files
-aws s3 ls s3://YOUR-BUCKET/transactions/ --recursive
+# Listar arquivos no S3
+aws s3 ls s3://SEU-BUCKET/transactions/ --recursive
 
-# Count S3 objects
-aws s3 ls s3://YOUR-BUCKET/transactions/ --recursive | wc -l
+# Contar objetos no S3
+aws s3 ls s3://SEU-BUCKET/transactions/ --recursive | wc -l
 
-# Download sample S3 file
-aws s3 cp s3://YOUR-BUCKET/transactions/year=2024/month=01/day=15/transactions_xxx.json ./sample.json
+# Baixar arquivo de exemplo do S3
+aws s3 cp s3://SEU-BUCKET/transactions/year=2024/month=01/day=15/transactions_xxx.json ./sample.json
 ```
 
-## Glue Job Commands
+## Comandos do job Glue
 
 ### Build
 
 ```bash
-# Navigate to glue-job directory
+# Navegar para o diretório glue-job
 cd glue-job
 
-# Clean previous builds
+# Limpar builds anteriores
 sbt clean
 
-# Compile
+# Compilar
 sbt compile
 
-# Run tests (if any)
+# Executar testes (se houver)
 sbt test
 
-# Package JAR
+# Empacotar JAR
 sbt package
 
-# Create assembly JAR (fat JAR)
+# Criar JAR assembly (fat JAR)
 sbt assembly
 
-# Check JAR location
+# Verificar local do JAR
 ls -lh target/scala-2.12/
 ```
 
-### Deploy
+### Implantar
 
 ```bash
-# Set variables
+# Definir variáveis
 GLUE_BUCKET=$(cd ../infrastructure && terraform output -raw glue_scripts_bucket)
 JAR_FILE="target/scala-2.12/financial-transaction-processor_2.12-1.0.jar"
 
-# Upload JAR to S3
+# Enviar JAR para o S3
 aws s3 cp $JAR_FILE s3://$GLUE_BUCKET/scripts/
 
-# Verify upload
+# Verificar envio
 aws s3 ls s3://$GLUE_BUCKET/scripts/
 
-# Update Glue job script location
+# Atualizar local do script do job Glue
 JOB_NAME=$(cd ../infrastructure && terraform output -raw glue_job_name)
 aws glue update-job --job-name $JOB_NAME \
   --job-update '{
@@ -179,13 +179,13 @@ aws glue update-job --job-name $JOB_NAME \
   }'
 ```
 
-### Execute
+### Executar
 
 ```bash
-# Get job name
+# Obter nome do job
 JOB_NAME=$(cd infrastructure && terraform output -raw glue_job_name)
 
-# Start job run
+# Iniciar execução do job
 aws glue start-job-run \
   --job-name $JOB_NAME \
   --arguments '{
@@ -194,97 +194,97 @@ aws glue start-job-run \
     "--day":"15"
   }'
 
-# Start job run with all parameters
+# Iniciar com todos os parâmetros
 aws glue start-job-run \
   --job-name $JOB_NAME \
   --arguments '{
     "--year":"2024",
     "--month":"01",
     "--day":"15",
-    "--s3_bucket":"YOUR-BUCKET",
+    "--s3_bucket":"SEU-BUCKET",
     "--dynamodb_table":"customer-registration-dev",
-    "--opensearch_endpoint":"YOUR-ENDPOINT",
+    "--opensearch_endpoint":"SEU-ENDPOINT",
     "--opensearch_index":"financial-transactions",
     "--aws_region":"us-east-1"
   }'
 
-# Get latest job run ID
+# Obter ID da última execução
 RUN_ID=$(aws glue get-job-runs --job-name $JOB_NAME --max-results 1 \
   --query 'JobRuns[0].Id' --output text)
 
-echo "Job Run ID: $RUN_ID"
+echo "ID da execução: $RUN_ID"
 ```
 
-### Monitor
+### Monitorar
 
 ```bash
-# Check job status
+# Verificar status do job
 aws glue get-job-run \
   --job-name $JOB_NAME \
   --run-id $RUN_ID \
   --query 'JobRun.JobRunState' \
   --output text
 
-# Get job run details
+# Detalhes da execução
 aws glue get-job-run \
   --job-name $JOB_NAME \
   --run-id $RUN_ID
 
-# List all job runs
+# Listar todas as execuções
 aws glue get-job-runs --job-name $JOB_NAME
 
-# Watch job status (updates every 10 seconds)
+# Acompanhar status (atualiza a cada 10 segundos)
 watch -n 10 "aws glue get-job-run --job-name $JOB_NAME --run-id $RUN_ID \
   --query 'JobRun.JobRunState' --output text"
 ```
 
-## CloudWatch Logs Commands
+## Comandos CloudWatch Logs
 
 ```bash
-# List log groups
+# Listar grupos de log
 aws logs describe-log-groups --log-group-name-prefix /aws-glue
 
-# Tail logs (follow mode)
+# Acompanhar logs (modo follow)
 aws logs tail /aws-glue/jobs/output --follow
 
-# Tail logs since specific time
+# Logs desde um horário
 aws logs tail /aws-glue/jobs/output --follow --since 30m
 
-# Filter logs for errors
+# Filtrar logs por erro
 aws logs filter-log-events \
   --log-group-name /aws-glue/jobs/output \
   --filter-pattern "ERROR"
 
-# Filter logs for specific job run
+# Filtrar por execução específica
 aws logs filter-log-events \
   --log-group-name /aws-glue/jobs/output \
   --filter-pattern "$RUN_ID"
 
-# Get recent log events
+# Eventos recentes
 aws logs tail /aws-glue/jobs/output --since 1h
 ```
 
-## OpenSearch Commands
+## Comandos OpenSearch
 
 ```bash
-# Get OpenSearch endpoint
+# Obter endpoint OpenSearch
 OPENSEARCH_ENDPOINT=$(cd infrastructure && terraform output -raw opensearch_endpoint)
 
-# Check cluster health
+# Saúde do cluster
 curl -X GET "https://$OPENSEARCH_ENDPOINT/_cluster/health?pretty"
 
-# List indices
+# Listar índices
 curl -X GET "https://$OPENSEARCH_ENDPOINT/_cat/indices?v"
 
-# Count documents
+# Contar documentos
 curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_count?pretty"
 
-# Search all documents (limit 10)
+# Buscar todos (limite 10)
 curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty" \
   -H 'Content-Type: application/json' \
   -d '{"size": 10, "query": {"match_all": {}}}'
 
-# Search by transaction type
+# Buscar por tipo de transação
 curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty" \
   -H 'Content-Type: application/json' \
   -d '{
@@ -295,7 +295,7 @@ curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty"
     }
   }'
 
-# Aggregate by transaction type
+# Agregação por tipo de transação
 curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty" \
   -H 'Content-Type: application/json' \
   -d '{
@@ -307,34 +307,34 @@ curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_search?pretty"
     }
   }'
 
-# Get index mapping
+# Mapeamento do índice
 curl -X GET "https://$OPENSEARCH_ENDPOINT/financial-transactions/_mapping?pretty"
 
-# Delete index (careful!)
+# Excluir índice (cuidado!)
 curl -X DELETE "https://$OPENSEARCH_ENDPOINT/financial-transactions"
 ```
 
-## DynamoDB Commands
+## Comandos DynamoDB
 
 ```bash
-# Get table name
+# Obter nome da tabela
 TABLE_NAME=$(cd infrastructure && terraform output -raw dynamodb_table_name)
 
-# Describe table
+# Descrever tabela
 aws dynamodb describe-table --table-name $TABLE_NAME
 
-# Scan table (first 10 items)
+# Scan (primeiros 10 itens)
 aws dynamodb scan --table-name $TABLE_NAME --max-items 10
 
-# Count items
+# Contar itens
 aws dynamodb scan --table-name $TABLE_NAME --select COUNT
 
-# Get specific item
+# Obter item específico
 aws dynamodb get-item \
   --table-name $TABLE_NAME \
-  --key '{"numero_unico_conta": {"S": "YOUR-ACCOUNT-ID"}}'
+  --key '{"numero_unico_conta": {"S": "SEU-ACCOUNT-ID"}}'
 
-# Batch get items
+# Batch get
 aws dynamodb batch-get-item \
   --request-items '{
     "'$TABLE_NAME'": {
@@ -345,106 +345,106 @@ aws dynamodb batch-get-item \
     }
   }'
 
-# Query by partition key
+# Query por partition key
 aws dynamodb query \
   --table-name $TABLE_NAME \
   --key-condition-expression "numero_unico_conta = :account_id" \
-  --expression-attribute-values '{":account_id": {"S": "YOUR-ACCOUNT-ID"}}'
+  --expression-attribute-values '{":account_id": {"S": "SEU-ACCOUNT-ID"}}'
 ```
 
-## S3 Commands
+## Comandos S3
 
 ```bash
-# Get bucket name
+# Obter nome do bucket
 BUCKET_NAME=$(cd infrastructure && terraform output -raw s3_transactions_bucket)
 
-# List all objects
+# Listar objetos
 aws s3 ls s3://$BUCKET_NAME/transactions/ --recursive
 
-# List specific partition
+# Listar partição específica
 aws s3 ls s3://$BUCKET_NAME/transactions/year=2024/month=01/day=15/
 
-# Copy file from S3
+# Copiar do S3
 aws s3 cp s3://$BUCKET_NAME/transactions/year=2024/month=01/day=15/file.json ./
 
-# Upload file to S3
+# Enviar para o S3
 aws s3 cp local-file.json s3://$BUCKET_NAME/transactions/year=2024/month=01/day=15/
 
-# Sync directory to S3
+# Sincronizar diretório com S3
 aws s3 sync ./local-dir s3://$BUCKET_NAME/transactions/
 
-# Remove all objects (careful!)
+# Remover todos os objetos (cuidado!)
 aws s3 rm s3://$BUCKET_NAME/transactions/ --recursive
 ```
 
-## Makefile Commands
+## Comandos do Makefile
 
 ```bash
-# Show available commands
+# Mostrar comandos disponíveis
 make help
 
-# Initialize Terraform
+# Inicializar Terraform
 make init
 
-# Plan Terraform changes
+# Planejar alterações Terraform
 make plan
 
-# Apply infrastructure
+# Aplicar infraestrutura
 make apply
 
-# Generate test data
+# Gerar dados de teste
 make generate-data
 
-# Build Glue Job
+# Compilar job Glue
 make build-glue
 
-# Deploy Glue Job
+# Implantar job Glue
 make deploy-glue
 
-# Run Glue Job
+# Executar job Glue
 make run-glue
 
-# Clean build artifacts
+# Limpar artefatos de build
 make clean
 
-# Destroy infrastructure
+# Destruir infraestrutura
 make destroy
 ```
 
-## Troubleshooting Commands
+## Comandos de troubleshooting
 
-### Check AWS Resources
+### Verificar recursos AWS
 
 ```bash
-# List S3 buckets
+# Listar buckets S3
 aws s3 ls
 
-# List DynamoDB tables
+# Listar tabelas DynamoDB
 aws dynamodb list-tables
 
-# List OpenSearch domains
+# Listar domínios OpenSearch
 aws opensearch list-domain-names
 
-# List Glue jobs
+# Listar jobs Glue
 aws glue list-jobs
 
-# Check IAM role
+# Verificar papel IAM
 aws iam get-role --role-name glue-job-role
 ```
 
-### Debug Glue Job
+### Depurar job Glue
 
 ```bash
-# Get job definition
+# Definição do job
 aws glue get-job --job-name $JOB_NAME
 
-# Get job run error
+# Erro da execução
 aws glue get-job-run \
   --job-name $JOB_NAME \
   --run-id $RUN_ID \
   --query 'JobRun.ErrorMessage'
 
-# Check CloudWatch metrics
+# Métricas CloudWatch
 aws cloudwatch get-metric-statistics \
   --namespace Glue \
   --metric-name glue.driver.aggregate.numCompletedTasks \
@@ -455,13 +455,13 @@ aws cloudwatch get-metric-statistics \
   --statistics Sum
 ```
 
-### Cleanup Commands
+### Comandos de limpeza
 
 ```bash
-# Delete all objects from S3 bucket
+# Excluir todos os objetos do bucket S3
 aws s3 rm s3://$BUCKET_NAME --recursive
 
-# Delete DynamoDB table items (scan and delete)
+# Excluir itens da tabela DynamoDB (scan e delete)
 aws dynamodb scan --table-name $TABLE_NAME \
   --attributes-to-get numero_unico_conta \
   --query 'Items[*].numero_unico_conta.S' \
@@ -469,19 +469,19 @@ aws dynamodb scan --table-name $TABLE_NAME \
   --table-name $TABLE_NAME \
   --key '{"numero_unico_conta": {"S": "{}"}}'
 
-# Delete OpenSearch index
+# Excluir índice OpenSearch
 curl -X DELETE "https://$OPENSEARCH_ENDPOINT/financial-transactions"
 
-# Stop running Glue job
+# Parar job Glue em execução
 aws glue batch-stop-job-run \
   --job-name $JOB_NAME \
   --job-run-ids $RUN_ID
 ```
 
-## Environment Variables
+## Variáveis de ambiente
 
 ```bash
-# Set common environment variables
+# Definir variáveis comuns
 export AWS_REGION=us-east-1
 export AWS_PROFILE=default
 export GLUE_JOB_NAME=$(cd infrastructure && terraform output -raw glue_job_name)
@@ -489,7 +489,7 @@ export S3_BUCKET=$(cd infrastructure && terraform output -raw s3_transactions_bu
 export DYNAMODB_TABLE=$(cd infrastructure && terraform output -raw dynamodb_table_name)
 export OPENSEARCH_ENDPOINT=$(cd infrastructure && terraform output -raw opensearch_endpoint)
 
-# Save to .env file
+# Salvar em .env
 cat > .env << EOF
 AWS_REGION=$AWS_REGION
 GLUE_JOB_NAME=$GLUE_JOB_NAME
@@ -498,42 +498,42 @@ DYNAMODB_TABLE=$DYNAMODB_TABLE
 OPENSEARCH_ENDPOINT=$OPENSEARCH_ENDPOINT
 EOF
 
-# Load from .env file
+# Carregar do .env
 source .env
 ```
 
-## Useful One-Liners
+## One-liners úteis
 
 ```bash
-# Complete deployment pipeline
+# Pipeline completo de implantação
 cd infrastructure && terraform apply -auto-approve && \
 cd ../data-generation && python generate_customers.py && python generate_transactions.py && \
 cd ../glue-job && sbt clean package && \
 aws s3 cp target/scala-2.12/*.jar s3://$(cd ../infrastructure && terraform output -raw glue_scripts_bucket)/scripts/
 
-# Run job and tail logs
+# Executar job e acompanhar logs
 aws glue start-job-run --job-name $JOB_NAME --arguments '{"--year":"2024","--month":"01","--day":"15"}' && \
 aws logs tail /aws-glue/jobs/output --follow
 
-# Check pipeline status
-echo "S3 Files: $(aws s3 ls s3://$S3_BUCKET/transactions/ --recursive | wc -l)" && \
-echo "DynamoDB Items: $(aws dynamodb scan --table-name $DYNAMODB_TABLE --select COUNT --query 'Count' --output text)" && \
-echo "OpenSearch Docs: $(curl -s https://$OPENSEARCH_ENDPOINT/financial-transactions/_count | jq '.count')"
+# Verificar status do pipeline
+echo "Arquivos S3: $(aws s3 ls s3://$S3_BUCKET/transactions/ --recursive | wc -l)" && \
+echo "Itens DynamoDB: $(aws dynamodb scan --table-name $DYNAMODB_TABLE --select COUNT --query 'Count' --output text)" && \
+echo "Docs OpenSearch: $(curl -s https://$OPENSEARCH_ENDPOINT/financial-transactions/_count | jq '.count')"
 ```
 
-## Tips and Best Practices
+## Dicas e boas práticas
 
-1. **Always check AWS region**: Ensure you're working in the correct region
-2. **Use environment variables**: Set common values to avoid repetition
-3. **Monitor costs**: Check AWS Cost Explorer regularly
-4. **Clean up resources**: Destroy infrastructure when not in use
-5. **Version control**: Commit changes regularly
-6. **Test incrementally**: Test each component before integration
-7. **Check logs**: Always review CloudWatch logs for errors
-8. **Backup data**: Keep local copies of generated data
-9. **Document changes**: Update documentation as you modify code
-10. **Use Makefile**: Leverage automation for common tasks
+1. **Sempre verificar a região AWS**: Trabalhe na região correta
+2. **Usar variáveis de ambiente**: Evite repetição de valores
+3. **Monitorar custos**: Consulte o AWS Cost Explorer com frequência
+4. **Limpar recursos**: Destrua a infraestrutura quando não estiver em uso
+5. **Controle de versão**: Faça commits regularmente
+6. **Testar incrementalmente**: Teste cada componente antes da integração
+7. **Verificar logs**: Revise os logs do CloudWatch em caso de erro
+8. **Backup de dados**: Mantenha cópias locais dos dados gerados
+9. **Documentar mudanças**: Atualize a documentação ao alterar o código
+10. **Usar o Makefile**: Use a automação para tarefas comuns
 
 ---
 
-**Quick Help**: Run `make help` for available automation commands
+**Ajuda rápida**: Execute `make help` para ver os comandos de automação disponíveis

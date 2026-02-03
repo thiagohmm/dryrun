@@ -16,8 +16,8 @@ import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 /**
- * OpenSearch sink for writing enriched transactions
- * Uses bulk API for efficient indexing
+ * Sink OpenSearch para gravação de transações enriquecidas.
+ * Usa API bulk para indexação eficiente.
  */
 class OpenSearchSink(
   endpoint: String,
@@ -34,7 +34,7 @@ class OpenSearchSink(
     mapper
   }
   
-  // OpenSearch client is created lazily per executor
+  // Cliente OpenSearch é criado de forma lazy por executor
   @transient private lazy val client: RestHighLevelClient = {
     val httpHost = HttpHost.create(s"https://$endpoint")
     
@@ -44,15 +44,15 @@ class OpenSearchSink(
   }
   
   /**
-   * Write enriched transactions to OpenSearch in bulk
-   * 
-   * @param transactions Iterator of enriched transactions
-   * @return Number of successfully indexed documents
+   * Grava transações enriquecidas no OpenSearch em massa.
+   *
+   * @param transactions Iterador de transações enriquecidas
+   * @return Número de documentos indexados com sucesso
    */
   def writeBulk(transactions: Iterator[EnrichedTransaction]): Int = {
     var totalIndexed = 0
-    
-    // Process in batches
+
+    // Processa em lotes
     transactions.grouped(batchSize).foreach { batch =>
       val indexed = indexBatch(batch)
       totalIndexed += indexed
@@ -63,7 +63,7 @@ class OpenSearchSink(
   }
   
   /**
-   * Index a batch of transactions
+   * Indexa um lote de transações.
    */
   private def indexBatch(batch: Seq[EnrichedTransaction]): Int = {
     if (batch.isEmpty) {
@@ -74,10 +74,10 @@ class OpenSearchSink(
     
     batch.foreach { transaction =>
       try {
-        // Convert to JSON
+        // Converte para JSON
         val jsonString = objectMapper.writeValueAsString(transaction)
-        
-        // Create index request with document ID (codigo_lancamento)
+
+        // Cria requisição de índice com ID do documento (codigo_lancamento)
         val indexRequest = new IndexRequest(indexName)
           .id(transaction.codigoLancamento)
           .source(jsonString, XContentType.JSON)
@@ -105,36 +105,45 @@ class OpenSearchSink(
   }
   
   /**
-   * Execute bulk request with retry logic
+   * Envia uma requisição bulk ao OpenSearch com retentativas em caso de falha.
+   *
+   * Útil quando o cluster está sob carga, há throttling ou falhas transitórias de rede.
+   * A cada falha, aguarda um tempo crescente (backoff) antes de tentar de novo.
+   *
+   * @param bulkRequest Requisição bulk contendo os documentos a indexar
+   * @param maxRetries Número máximo de tentativas (ex.: 3 = 1 tentativa inicial + 3 retries)
+   * @return Success(BulkResponse) em caso de sucesso, Failure(exception) após esgotar as tentativas
    */
   private def executeBulkWithRetry(
     bulkRequest: BulkRequest,
     maxRetries: Int
   ): Try[BulkResponse] = {
-    
+
+    /** Tenta enviar o bulk; se falhar e ainda houver retries, espera e tenta de novo. */
     def attempt(retriesLeft: Int): Try[BulkResponse] = {
       Try {
         client.bulk(bulkRequest, RequestOptions.DEFAULT)
       } match {
         case success @ Success(_) =>
           success
-          
+
         case Failure(exception) if retriesLeft > 0 =>
           logger.warn(s"Bulk request failed, retrying... (${retriesLeft} retries left)", exception)
-          Thread.sleep(1000 * (maxRetries - retriesLeft + 1)) // Exponential backoff
+          // Backoff: espera 1s, 2s, 3s... antes de cada retry para não sobrecarregar o cluster
+          Thread.sleep(1000 * (maxRetries - retriesLeft + 1))
           attempt(retriesLeft - 1)
-          
+
         case failure @ Failure(exception) =>
           logger.error("Bulk request failed after all retries", exception)
           failure
       }
     }
-    
+
     attempt(maxRetries)
   }
   
   /**
-   * Create index with mapping if it doesn't exist
+   * Cria o índice com mapeamento se não existir.
    */
   def createIndexIfNotExists(): Unit = {
     Try {
@@ -200,7 +209,7 @@ class OpenSearchSink(
 
 object OpenSearchSink {
   /**
-   * Factory method to create OpenSearchSink
+   * Método fábrica para criar OpenSearchSink.
    */
   def apply(endpoint: String, indexName: String, batchSize: Int = 1000): OpenSearchSink = {
     new OpenSearchSink(endpoint, indexName, batchSize)

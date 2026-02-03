@@ -1,160 +1,160 @@
-# AWS Configuration
+# Configuração AWS
 variable "aws_region" {
-  description = "AWS region for resources"
+  description = "Região AWS para os recursos"
   type        = string
   default     = "us-east-1"
 }
 
 variable "project_name" {
-  description = "Project name for resource naming"
+  description = "Nome do projeto para nomenclatura dos recursos"
   type        = string
   default     = "financial-batch-processor"
 }
 
 variable "environment" {
-  description = "Environment (dev, staging, prod)"
+  description = "Ambiente (dev, staging, prod)"
   type        = string
   default     = "dev"
 }
 
-# S3 Configuration
+# Configuração S3
 variable "s3_transactions_bucket_name" {
-  description = "S3 bucket name for transaction data"
+  description = "Nome do bucket S3 para dados de transações"
   type        = string
 }
 
 variable "s3_glue_scripts_bucket_name" {
-  description = "S3 bucket name for Glue scripts"
+  description = "Nome do bucket S3 para scripts do Glue"
   type        = string
 }
 
-# DynamoDB Configuration
+# Configuração DynamoDB
 variable "dynamodb_table_name" {
-  description = "DynamoDB table name for customer data"
+  description = "Nome da tabela DynamoDB para dados de clientes"
   type        = string
   default     = "customer-registration"
 }
 
 variable "dynamodb_billing_mode" {
-  description = "DynamoDB billing mode (PROVISIONED or PAY_PER_REQUEST)"
+  description = "Modo de cobrança DynamoDB (PROVISIONED ou PAY_PER_REQUEST)"
   type        = string
   default     = "PAY_PER_REQUEST"
 }
 
 variable "dynamodb_read_capacity" {
-  description = "DynamoDB read capacity units (only for PROVISIONED mode)"
+  description = "Unidades de capacidade de leitura DynamoDB (apenas para modo PROVISIONED)"
   type        = number
   default     = 5
 }
 
 variable "dynamodb_write_capacity" {
-  description = "DynamoDB write capacity units (only for PROVISIONED mode)"
+  description = "Unidades de capacidade de escrita DynamoDB (apenas para modo PROVISIONED)"
   type        = number
   default     = 5
 }
 
-# OpenSearch Configuration
+# Configuração OpenSearch
 variable "opensearch_domain_name" {
-  description = "OpenSearch domain name"
+  description = "Nome do domínio OpenSearch"
   type        = string
   default     = "financial-txns"
 }
 
 variable "opensearch_version" {
-  description = "OpenSearch version"
+  description = "Versão do OpenSearch"
   type        = string
   default     = "OpenSearch_2.11"
 }
 
 variable "opensearch_instance_type" {
-  description = "OpenSearch instance type"
+  description = "Tipo de instância OpenSearch"
   type        = string
   default     = "t3.small.search"
 }
 
 variable "opensearch_instance_count" {
-  description = "Number of OpenSearch instances"
+  description = "Número de instâncias OpenSearch"
   type        = number
   default     = 1
 }
 
 variable "opensearch_ebs_volume_size" {
-  description = "EBS volume size in GB for OpenSearch"
+  description = "Tamanho do volume EBS em GB para OpenSearch"
   type        = number
   default     = 10
 }
 
 variable "opensearch_ebs_volume_type" {
-  description = "EBS volume type for OpenSearch"
+  description = "Tipo de volume EBS para OpenSearch"
   type        = string
   default     = "gp3"
 }
 
 variable "opensearch_allowed_ips" {
-  description = "List of IP addresses allowed to access OpenSearch"
+  description = "Lista de endereços IP permitidos a acessar o OpenSearch"
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
 
-# Glue Job Configuration
+# Configuração do job Glue
 variable "glue_job_name" {
-  description = "Glue job name"
+  description = "Nome do job Glue"
   type        = string
   default     = "financial-transaction-processor"
 }
 
 variable "glue_version" {
-  description = "Glue version (4.0 or 5.0)"
+  description = "Versão do Glue (4.0 ou 5.0)"
   type        = string
   default     = "4.0"
 }
 
 variable "glue_worker_type" {
-  description = "Glue worker type (G.1X or G.2X)"
+  description = "Tipo de worker Glue (G.1X ou G.2X)"
   type        = string
   default     = "G.1X"
 }
 
 variable "glue_number_of_workers" {
-  description = "Number of Glue workers"
+  description = "Número de workers do Glue"
   type        = number
   default     = 2
 }
 
 variable "glue_max_retries" {
-  description = "Maximum number of retries for Glue job"
+  description = "Número máximo de tentativas do job Glue"
   type        = number
   default     = 1
 }
 
 variable "glue_timeout_minutes" {
-  description = "Glue job timeout in minutes"
+  description = "Timeout do job Glue em minutos"
   type        = number
   default     = 60
 }
 
-# Optional VPC Configuration
+# Configuração VPC opcional
 variable "vpc_id" {
-  description = "VPC ID for OpenSearch (optional)"
+  description = "ID da VPC para OpenSearch (opcional)"
   type        = string
   default     = ""
 }
 
 variable "private_subnet_ids" {
-  description = "Private subnet IDs for OpenSearch (optional)"
+  description = "IDs das subnets privadas para OpenSearch (opcional)"
   type        = list(string)
   default     = []
 }
 
 variable "security_group_ids" {
-  description = "Security group IDs for Glue job (optional)"
+  description = "IDs dos security groups para o job Glue (opcional)"
   type        = list(string)
   default     = []
 }
 
 # Tags
 variable "tags" {
-  description = "Tags to apply to all resources"
+  description = "Tags a aplicar a todos os recursos"
   type        = map(string)
   default = {
     Project     = "FinancialBatchProcessor"

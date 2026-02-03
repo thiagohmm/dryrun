@@ -1,16 +1,16 @@
 .PHONY: help init plan apply destroy generate-data build-glue deploy-glue run-glue clean
 
 help:
-	@echo "Available commands:"
-	@echo "  make init          - Initialize Terraform"
-	@echo "  make plan          - Plan Terraform changes"
-	@echo "  make apply         - Apply Terraform infrastructure"
-	@echo "  make destroy       - Destroy Terraform infrastructure"
-	@echo "  make generate-data - Generate test data"
-	@echo "  make build-glue    - Build Glue Job JAR"
-	@echo "  make deploy-glue   - Deploy Glue Job to S3"
-	@echo "  make run-glue      - Run Glue Job"
-	@echo "  make clean         - Clean build artifacts"
+	@echo "Comandos disponíveis:"
+	@echo "  make init          - Inicializa o Terraform"
+	@echo "  make plan          - Planeja alterações do Terraform"
+	@echo "  make apply         - Aplica a infraestrutura Terraform"
+	@echo "  make destroy       - Destrói a infraestrutura Terraform"
+	@echo "  make generate-data - Gera dados de teste"
+	@echo "  make build-glue    - Compila o JAR do job Glue"
+	@echo "  make deploy-glue   - Implanta o job Glue no S3"
+	@echo "  make run-glue      - Executa o job Glue"
+	@echo "  make clean         - Remove artefatos de build"
 
 init:
 	cd infrastructure && terraform init
@@ -33,7 +33,7 @@ build-glue:
 	cd glue-job && sbt clean package
 
 deploy-glue: build-glue
-	@echo "Deploying Glue Job JAR to S3..."
+	@echo "Implantando JAR do job Glue no S3..."
 	@BUCKET=$$(cd infrastructure && terraform output -raw glue_scripts_bucket); \
 	aws s3 cp glue-job/target/scala-2.12/financial-transaction-processor_2.12-1.0.jar s3://$$BUCKET/scripts/
 

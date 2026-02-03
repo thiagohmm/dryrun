@@ -24,17 +24,17 @@ resource "aws_opensearch_domain" "financial_transactions" {
     throughput  = var.opensearch_ebs_volume_type == "gp3" ? 125 : null
   }
 
-  # Encryption at rest
+  # Criptografia em repouso
   encrypt_at_rest {
     enabled = true
   }
 
-  # Node-to-node encryption
+  # Criptografia nó a nó
   node_to_node_encryption {
     enabled = true
   }
 
-  # Domain endpoint options
+  # Opções de endpoint do domínio
   domain_endpoint_options {
     enforce_https       = true
     tls_security_policy = "Policy-Min-TLS-1-2-2019-07"
@@ -46,13 +46,13 @@ resource "aws_opensearch_domain" "financial_transactions" {
     internal_user_database_enabled = false
   }
 
-  # Advanced options
+  # Opções avançadas
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
     "override_main_response_version"         = "false"
   }
 
-  # Access policy for public domain
+  # Política de acesso para domínio público
   access_policies = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -72,12 +72,12 @@ resource "aws_opensearch_domain" "financial_transactions" {
     ]
   })
 
-  # Automated snapshots
+  # Snapshots automatizados
   snapshot_options {
     automated_snapshot_start_hour = 23
   }
 
-  # CloudWatch logging
+  # Logging no CloudWatch
   log_publishing_options {
     cloudwatch_log_group_arn = aws_cloudwatch_log_group.opensearch_application_logs.arn
     log_type                 = "ES_APPLICATION_LOGS"
@@ -97,7 +97,7 @@ resource "aws_opensearch_domain" "financial_transactions" {
     local.common_tags,
     {
       Name    = "${var.project_name}-opensearch-${var.environment}"
-      Purpose = "Store enriched financial transactions"
+      Purpose = "Armazenar transações financeiras enriquecidas"
     }
   )
 
@@ -109,7 +109,7 @@ resource "aws_opensearch_domain" "financial_transactions" {
   ]
 }
 
-# CloudWatch Log Groups for OpenSearch
+# Grupos de log CloudWatch para OpenSearch
 resource "aws_cloudwatch_log_group" "opensearch_application_logs" {
   name              = "/aws/opensearch/${var.opensearch_domain_name}/application-logs"
   retention_in_days = 7
@@ -131,7 +131,7 @@ resource "aws_cloudwatch_log_group" "opensearch_search_slow_logs" {
   tags = local.common_tags
 }
 
-# CloudWatch Log Resource Policy for OpenSearch
+# Política de recurso de log CloudWatch para OpenSearch
 resource "aws_cloudwatch_log_resource_policy" "opensearch" {
   policy_name = "${var.opensearch_domain_name}-log-policy"
 
@@ -153,7 +153,7 @@ resource "aws_cloudwatch_log_resource_policy" "opensearch" {
   })
 }
 
-# CloudWatch Alarms for OpenSearch
+# Alarmes CloudWatch para OpenSearch
 resource "aws_cloudwatch_metric_alarm" "opensearch_cluster_status_red" {
   alarm_name          = "${var.opensearch_domain_name}-cluster-status-red"
   comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -202,8 +202,8 @@ resource "aws_cloudwatch_metric_alarm" "opensearch_free_storage_space" {
   namespace           = "AWS/ES"
   period              = "60"
   statistic           = "Minimum"
-  threshold           = "2000" # 2GB in MB
-  alarm_description   = "OpenSearch free storage space is low"
+  threshold           = "2000" # 2GB em MB
+  alarm_description   = "Espaço livre do OpenSearch está baixo"
   treat_missing_data  = "notBreaching"
 
   dimensions = {

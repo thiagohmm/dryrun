@@ -3,8 +3,8 @@ package models
 import java.sql.Timestamp
 
 /**
- * Case class representing a financial transaction from S3
- * Schema matches the JSON structure in S3 (snake_case)
+ * Case class que representa uma transação financeira do S3.
+ * O esquema corresponde à estrutura JSON no S3 (snake_case).
  */
 case class Transaction(
   codigo_lancamento: String,
@@ -16,7 +16,7 @@ case class Transaction(
 )
 
 /**
- * Case class representing customer data from DynamoDB
+ * Case class que representa dados de cliente do DynamoDB.
  */
 case class CustomerData(
   numero_unico_conta: String,
@@ -27,8 +27,8 @@ case class CustomerData(
 )
 
 /**
- * Case class representing enriched transaction for OpenSearch
- * All fields in camelCase as per requirements
+ * Case class que representa transação enriquecida para o OpenSearch.
+ * Todos os campos em camelCase conforme requisitos.
  */
 case class EnrichedTransaction(
   codigoLancamento: String,
@@ -44,7 +44,7 @@ case class EnrichedTransaction(
 
 object EnrichedTransaction {
   /**
-   * Create an enriched transaction by merging transaction and customer data
+   * Cria uma transação enriquecida mesclando transação e dados do cliente.
    */
   def fromTransactionAndCustomer(
     transaction: Transaction,

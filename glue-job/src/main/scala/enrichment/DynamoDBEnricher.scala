@@ -11,14 +11,14 @@ import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 /**
- * DynamoDB enricher that performs batch-get operations
- * to retrieve customer data for transactions
+ * Enricher DynamoDB que realiza operações batch-get
+ * para recuperar dados de clientes das transações.
  */
 class DynamoDBEnricher(tableName: String, region: String) extends Serializable {
   
   @transient private lazy val logger = LoggerFactory.getLogger(getClass)
   
-  // DynamoDB client is created lazily per executor
+  // Cliente DynamoDB é criado de forma lazy por executor
   @transient private lazy val dynamoDBClient: AmazonDynamoDB = {
     AmazonDynamoDBClientBuilder
       .standard()
@@ -27,11 +27,11 @@ class DynamoDBEnricher(tableName: String, region: String) extends Serializable {
   }
   
   /**
-   * Batch-get customer data from DynamoDB
-   * DynamoDB allows max 100 items per batch-get request
-   * 
-   * @param accountIds Set of unique account IDs to fetch
-   * @return Map of account ID to CustomerData
+   * Batch-get de dados de clientes no DynamoDB.
+   * O DynamoDB permite no máximo 100 itens por requisição batch-get.
+   *
+   * @param accountIds Conjunto de IDs de conta únicos a buscar
+   * @return Mapa de ID de conta para CustomerData
    */
   def batchGetCustomerData(accountIds: Set[String]): Map[String, CustomerData] = {
     if (accountIds.isEmpty) {
@@ -41,7 +41,7 @@ class DynamoDBEnricher(tableName: String, region: String) extends Serializable {
     
     logger.info(s"Fetching customer data for ${accountIds.size} unique accounts")
     
-    // Split into batches of 100 (DynamoDB limit)
+    // Divide em lotes de 100 (limite do DynamoDB)
     val batches = accountIds.grouped(100).toList
     
     batches.flatMap { batch =>
@@ -50,7 +50,7 @@ class DynamoDBEnricher(tableName: String, region: String) extends Serializable {
   }
   
   /**
-   * Perform batch-get with retry logic
+   * Executa batch-get com lógica de retry.
    */
   private def batchGetWithRetry(
     accountIds: Set[String],
@@ -67,7 +67,7 @@ class DynamoDBEnricher(tableName: String, region: String) extends Serializable {
           
         case Failure(exception) if retriesLeft > 0 =>
           logger.warn(s"Batch-get failed, retrying... (${retriesLeft} retries left)", exception)
-          Thread.sleep(1000 * (maxRetries - retriesLeft + 1)) // Exponential backoff
+          Thread.sleep(1000 * (maxRetries - retriesLeft + 1)) // Backoff exponencial
           attempt(retriesLeft - 1)
           
         case Failure(exception) =>
@@ -80,36 +80,36 @@ class DynamoDBEnricher(tableName: String, region: String) extends Serializable {
   }
   
   /**
-   * Perform the actual batch-get operation
+   * Executa a operação batch-get em si.
    */
   private def performBatchGet(accountIds: Set[String]): Map[String, CustomerData] = {
-    // Create keys for batch-get
+    // Cria chaves para o batch-get
     val keys = accountIds.map { accountId =>
       Map("numero_unico_conta" -> new AttributeValue().withS(accountId)).asJava
     }.toList.asJava
     
-    // Create batch-get request
+    // Cria requisição batch-get
     val keysAndAttributes = new KeysAndAttributes()
       .withKeys(keys)
-      .withConsistentRead(false) // Eventually consistent reads are cheaper
-    
+      .withConsistentRead(false) // Leituras eventualmente consistentes são mais baratas
+
     val requestItems = Map(tableName -> keysAndAttributes).asJava
-    
+
     val request = new BatchGetItemRequest()
       .withRequestItems(requestItems)
-    
-    // Execute batch-get
+
+    // Executa o batch-get
     val result = dynamoDBClient.batchGetItem(request)
-    
-    // Handle unprocessed keys (throttling)
+
+    // Trata chaves não processadas (throttling)
     var unprocessedKeys = result.getUnprocessedKeys
     var allItems = result.getResponses.get(tableName).asScala.toList
     
-    // Retry unprocessed keys with exponential backoff
+    // Retenta chaves não processadas com backoff exponencial
     var retryCount = 0
     while (!unprocessedKeys.isEmpty && retryCount < 5) {
       logger.warn(s"Found ${unprocessedKeys.get(tableName).getKeys.size()} unprocessed keys, retrying...")
-      Thread.sleep(Math.pow(2, retryCount).toLong * 100) // Exponential backoff
+      Thread.sleep(Math.pow(2, retryCount).toLong * 100) // Backoff exponencial
       
       val retryRequest = new BatchGetItemRequest().withRequestItems(unprocessedKeys)
       val retryResult = dynamoDBClient.batchGetItem(retryRequest)
@@ -119,7 +119,7 @@ class DynamoDBEnricher(tableName: String, region: String) extends Serializable {
       retryCount += 1
     }
     
-    // Convert DynamoDB items to CustomerData
+    // Converte itens DynamoDB em CustomerData
     allItems.flatMap { item =>
       parseCustomerData(item.asScala.toMap)
     }.map { customer =>
@@ -128,7 +128,7 @@ class DynamoDBEnricher(tableName: String, region: String) extends Serializable {
   }
   
   /**
-   * Parse DynamoDB item to CustomerData
+   * Converte item DynamoDB em CustomerData.
    */
   private def parseCustomerData(item: Map[String, AttributeValue]): Option[CustomerData] = {
     Try {
@@ -150,7 +150,7 @@ class DynamoDBEnricher(tableName: String, region: String) extends Serializable {
   }
   
   /**
-   * Close DynamoDB client (called at the end of processing)
+   * Fecha o cliente DynamoDB (chamado ao final do processamento).
    */
   def close(): Unit = {
     if (dynamoDBClient != null) {
@@ -161,7 +161,7 @@ class DynamoDBEnricher(tableName: String, region: String) extends Serializable {
 
 object DynamoDBEnricher {
   /**
-   * Factory method to create DynamoDBEnricher
+   * Método fábrica para criar DynamoDBEnricher.
    */
   def apply(tableName: String, region: String): DynamoDBEnricher = {
     new DynamoDBEnricher(tableName, region)
