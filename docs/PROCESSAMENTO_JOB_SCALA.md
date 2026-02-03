@@ -11,10 +11,12 @@ Este documento descreve **o que o código Scala faz** e **como ele é executado*
 O job **não roda sozinho no sentido de “sempre ligado”**. Ele é um **job em lote (batch)** que é **disparado** quando:
 
 1. **Você inicia manualmente** (por exemplo):
+
    ```bash
    aws glue start-job-run --job-name financial-transaction-processor \
      --arguments='--year=2024,--month=01,--day=15'
    ```
+
 2. **Um agendamento (schedule)** chama o Glue (por exemplo via EventBridge), passando ano/mês/dia.
 3. **Outro sistema** chama a API do Glue (`StartJobRun`) com os argumentos.
 
