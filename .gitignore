@@ -48,6 +48,8 @@ credentials
 *accessKeys.csv
 *.pem
 *.key
+AWS_CREDENTIALS.md
+*CREDENTIALS*
 
 # Dados gerados
 data-generation/output/

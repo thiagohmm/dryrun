@@ -147,18 +147,91 @@ aws glue start-job-run --job-name financial-transaction-processor \
 - ✅ Job Glue versão 4.0
 - ✅ 1000+ registros de teste com 20+ contas distintas
 
+## 📚 Documentação Adicional
+
+### Guias de Início Rápido
+- **[VISUAL_GUIDE.md](./VISUAL_GUIDE.md)** - 🎨 Guia visual do fluxo completo
+- **[FAQ.md](./FAQ.md)** - ❓ Perguntas frequentes com respostas diretas
+- **[JOB_EXECUTION.md](./JOB_EXECUTION.md)** - ▶️ Como executar o job Scala
+
+### Setup e Deploy
+- **[SETUP_AWS.md](./SETUP_AWS.md)** - 🔑 Configuração de credenciais AWS
+- **[SCALA_DEPLOYMENT.md](./SCALA_DEPLOYMENT.md)** - 🚀 Deploy completo do job Scala
+- **[deploy-full.sh](./deploy-full.sh)** - 🤖 Script automatizado de deployment
+
+### Documentação Técnica
+- **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - 🏗️ Arquitetura detalhada
+- **[docs/DEMO.md](./docs/DEMO.md)** - 🎬 Guia de demonstração
+- **[docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)** - 📦 Deployment detalhado
+
+### Comandos Rápidos
+
+```bash
+# Deploy completo (primeira vez)
+./deploy-full.sh
+
+# Ver todos os comandos disponíveis
+make help
+
+# Gerar dados de teste
+make generate-data
+
+# Executar job Scala
+make run-glue
+
+# Monitorar logs
+aws logs tail /aws-glue/jobs/financial-transaction-processor --follow
+
+# Destruir infraestrutura
+make destroy
+```
+
+## 🎯 Início Rápido (TL;DR)
+
+1. **Configurar AWS:**
+   ```bash
+   aws configure
+   # Access Key: [SUA_ACCESS_KEY_AQUI]
+   # Secret: [SUA_SECRET_KEY_AQUI]
+   # Region: us-east-2
+   ```
+
+2. **Deploy tudo:**
+   ```bash
+   ./deploy-full.sh
+   ```
+
+3. **Gerar dados:**
+   ```bash
+   make generate-data
+   ```
+
+4. **Executar job:**
+   ```bash
+   make run-glue
+   ```
+
 ## Acompanhamento de tempo de desenvolvimento
 
 Registre o tempo de desenvolvimento e apresente durante a demo.
 
 ## Checklist da demo
 
-- [ ] Infraestrutura implantada com sucesso
+- [ ] Infraestrutura implantada com sucesso (32 recursos)
+- [ ] Job Scala compilado e deployed no S3
 - [ ] Dados de teste gerados e enviados
 - [ ] Job Glue executado sem erros
 - [ ] Dados enriquecidos corretamente no OpenSearch
 - [ ] Métricas de desempenho revisadas
+- [ ] Logs CloudWatch funcionando
 - [ ] Explicação do código preparada
+
+## 💰 Custos Estimados
+
+- **OpenSearch t3.small**: ~$35-40/mês
+- **S3 + DynamoDB**: ~$1-2/mês
+- **Glue Job execução**: ~$0.15 por execução (10 min)
+- **Total**: ~$40-50/mês (ambiente dev)
 
 ## Licença
 
