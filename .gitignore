@@ -45,6 +45,9 @@ pip-delete-this-directory.txt
 # AWS
 .aws/
 credentials
+*accessKeys.csv
+*.pem
+*.key
 
 # Dados gerados
 data-generation/output/
