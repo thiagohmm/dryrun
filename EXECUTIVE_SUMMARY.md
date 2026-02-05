@@ -1,6 +1,7 @@
 # 📋 RESUMO EXECUTIVO - Job Scala no AWS Glue
 
 ## ✅ Sua Pergunta:
+
 > "E o Scala, que vai colocar o script e quando será executado?"
 
 ## 📝 Resposta Direta:
@@ -33,6 +34,7 @@ aws glue update-job ...               # Atualiza job
 ### 3️⃣ QUANDO SERÁ EXECUTADO?
 
 #### 📅 AGORA (Manual):
+
 ```bash
 make run-glue
 # OU
@@ -40,6 +42,7 @@ aws glue start-job-run --job-name financial-transaction-processor
 ```
 
 #### 📅 FUTURO (Automático - requer configuração):
+
 - **Agendado**: Cron diário, semanal, etc.
 - **Event-driven**: Quando novos dados chegam no S3
 - **EventBridge**: Regras customizadas
@@ -52,17 +55,21 @@ Você precisa disparar manualmente ou configurar triggers.
 ## 🚀 FLUXO COMPLETO EM 4 PASSOS
 
 ### Passo 1: Configurar AWS (já feito ✅)
+
 ```bash
 aws configure
 # Credenciais já configuradas
 ```
 
 ### Passo 2: Deploy Completo
+
 ```bash
 cd /home/thiagohmm/Estudo/dryRun
 ./deploy-full.sh
 ```
+
 **O que faz:**
+
 - Cria infraestrutura (Terraform)
 - Compila Scala (SBT)
 - Upload JAR para S3
@@ -71,18 +78,24 @@ cd /home/thiagohmm/Estudo/dryRun
 **Tempo:** ~15-20 minutos (OpenSearch demora)
 
 ### Passo 3: Gerar Dados
+
 ```bash
 make generate-data
 ```
+
 **O que faz:**
+
 - Cria clientes no DynamoDB
 - Cria transações no S3
 
 ### Passo 4: Executar Job
+
 ```bash
 make run-glue
 ```
+
 **O que faz:**
+
 - Dispara execução do job Glue
 - Job lê S3 → Enriquece com DynamoDB → Grava OpenSearch
 
@@ -90,14 +103,14 @@ make run-glue
 
 ## 📊 ESTADO ATUAL DO PROJETO
 
-| Item | Status |
-|------|--------|
-| Terraform configurado | ✅ Region us-east-2 |
-| AWS CLI configurado | ✅ Credenciais válidas |
-| Código Scala pronto | ✅ Em glue-job/src/ |
+| Item                  | Status                        |
+| --------------------- | ----------------------------- |
+| Terraform configurado | ✅ Region us-east-2           |
+| AWS CLI configurado   | ✅ Credenciais válidas        |
+| Código Scala pronto   | ✅ Em glue-job/src/           |
 | Infraestrutura criada | ⏳ Aguardando terraform apply |
-| JAR compilado | ⏳ Aguardando sbt assembly |
-| Job deployado | ⏳ Aguardando deploy |
+| JAR compilado         | ⏳ Aguardando sbt assembly    |
+| Job deployado         | ⏳ Aguardando deploy          |
 
 ---
 
@@ -111,6 +124,7 @@ cd /home/thiagohmm/Estudo/dryRun
 ```
 
 Isso vai:
+
 1. ✅ Criar toda infraestrutura AWS (32 recursos)
 2. ✅ Compilar o código Scala em JAR
 3. ✅ Fazer upload do JAR para S3
@@ -118,6 +132,7 @@ Isso vai:
 5. ✅ Criar arquivo de configuração para execução
 
 **Depois disso, você pode executar o job quando quiser com:**
+
 ```bash
 make run-glue
 ```
@@ -164,6 +179,7 @@ Antes de executar o job, certifique-se:
 - [ ] Dados de clientes no DynamoDB
 
 Tudo pronto? Execute:
+
 ```bash
 make run-glue
 ```
@@ -173,6 +189,7 @@ make run-glue
 ## 📞 Para Mais Informações
 
 Execute na raiz do projeto:
+
 ```bash
 make help
 ```

@@ -4,7 +4,7 @@
 
 - **Console URL**: https://160885283918.signin.aws.amazon.com/console
 - **Usuário**: thmileo@brq.com
-- **Senha**: YmrM16*N
+- **Senha**: YmrM16\*N
 - **Account ID**: 160885283918
 - **Região**: us-east-2 (Ohio)
 
@@ -62,9 +62,9 @@ Você deve ver algo como:
 
 ```json
 {
-    "UserId": "AIDAXXXXXXXXXXXXXX",
-    "Account": "160885283918",
-    "Arn": "arn:aws:iam::160885283918:user/thmileo@brq.com"
+  "UserId": "AIDAXXXXXXXXXXXXXX",
+  "Account": "160885283918",
+  "Arn": "arn:aws:iam::160885283918:user/thmileo@brq.com"
 }
 ```
 

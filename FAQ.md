@@ -3,6 +3,7 @@
 ## 1. Onde fica o código Scala?
 
 **Localização Local:**
+
 ```
 /home/thiagohmm/Estudo/dryRun/glue-job/src/main/scala/
 ├── FinancialTransactionProcessor.scala  ← Código principal
@@ -15,12 +16,14 @@
 ```
 
 **Após Compilação:**
+
 ```
 /home/thiagohmm/Estudo/dryRun/glue-job/target/scala-2.12/
 └── financial-transaction-processor-assembly-1.0.jar
 ```
 
 **No S3 (após deploy):**
+
 ```
 s3://glue-scripts-dev-160885283918/scripts/financial-transaction-processor-assembly-1.0.jar
 ```
@@ -56,6 +59,7 @@ s3://glue-scripts-dev-160885283918/scripts/financial-transaction-processor-assem
 ```
 
 ### Automático (usando o script):
+
 ```bash
 ./deploy-full.sh
 # Faz TUDO automaticamente!
@@ -70,11 +74,13 @@ s3://glue-scripts-dev-160885283918/scripts/financial-transaction-processor-assem
 O job **NÃO executa automaticamente**. Você precisa disparar manualmente:
 
 **Opção 1 - Via Makefile:**
+
 ```bash
 make run-glue
 ```
 
 **Opção 2 - Via AWS CLI:**
+
 ```bash
 aws glue start-job-run \
   --job-name financial-transaction-processor \
@@ -86,6 +92,7 @@ aws glue start-job-run \
 ```
 
 **Opção 3 - Via Console AWS:**
+
 1. Acesse: https://us-east-2.console.aws.amazon.com/glue
 2. Vá em **ETL Jobs** → **Jobs**
 3. Selecione `financial-transaction-processor`
@@ -117,6 +124,7 @@ resource "aws_glue_trigger" "daily_schedule" {
 ```
 
 Depois execute:
+
 ```bash
 cd infrastructure
 terraform apply
@@ -179,6 +187,7 @@ aws glue get-job-runs \
 ```
 
 **Saída exemplo:**
+
 ```json
 {
   "JobRunId": "jr_abc123",
@@ -225,6 +234,7 @@ make deploy-glue
 ```
 
 **Ou tudo de uma vez:**
+
 ```bash
 make deploy-glue  # Compila + Upload + Atualiza job
 ```
@@ -242,6 +252,7 @@ Se falhar, tentará **1 vez** automaticamente.
 ### Alarmes CloudWatch
 
 Um alarme será disparado quando:
+
 - Job falhar
 - Timeout (60 minutos)
 - Erros no processamento
@@ -266,19 +277,21 @@ aws glue get-job-run \
 ### Preços AWS Glue (região us-east-2):
 
 **Worker G.1X:**
+
 - $0.44 por DPU-hora
 - 2 workers = 2 DPUs
 
 **Exemplo de custo:**
 
 | Duração | DPU-hora | Custo |
-|---------|----------|-------|
+| ------- | -------- | ----- |
 | 5 min   | 0.167    | $0.07 |
 | 10 min  | 0.333    | $0.15 |
 | 30 min  | 1.0      | $0.44 |
 | 60 min  | 2.0      | $0.88 |
 
 **Execuções mensais:**
+
 - 1x/dia: ~30 execuções × $0.15 = **$4.50/mês**
 - 3x/dia: ~90 execuções × $0.15 = **$13.50/mês**
 
@@ -319,13 +332,13 @@ Crie um endpoint de desenvolvimento no AWS Glue Console e teste interativamente.
 
 ### Matriz de Mudanças:
 
-| Mudança | Comando | Recreia? |
-|---------|---------|----------|
-| Código Scala | `make deploy-glue` | ❌ |
-| Configuração Job | `terraform apply` | ❌ |
-| Worker type/count | `terraform apply` | ✅ (Job) |
-| Adicionar S3 bucket | `terraform apply` | ✅ (Bucket) |
-| Destruir tudo | `make destroy` | ✅ (Tudo) |
+| Mudança             | Comando            | Recreia?    |
+| ------------------- | ------------------ | ----------- |
+| Código Scala        | `make deploy-glue` | ❌          |
+| Configuração Job    | `terraform apply`  | ❌          |
+| Worker type/count   | `terraform apply`  | ✅ (Job)    |
+| Adicionar S3 bucket | `terraform apply`  | ✅ (Bucket) |
+| Destruir tudo       | `make destroy`     | ✅ (Tudo)   |
 
 ---
 
@@ -334,27 +347,32 @@ Crie um endpoint de desenvolvimento no AWS Glue Console e teste interativamente.
 ### Checklist:
 
 1. **JAR está no S3?**
+
    ```bash
    aws s3 ls s3://glue-scripts-dev-160885283918/scripts/
    ```
 
 2. **Job aponta para o JAR correto?**
+
    ```bash
    aws glue get-job --job-name financial-transaction-processor \
      | grep ScriptLocation
    ```
 
 3. **Permissões IAM corretas?**
+
    ```bash
    aws iam get-role --role-name financial-batch-processor-glue-job-role-dev
    ```
 
 4. **Dados existem no S3?**
+
    ```bash
    aws s3 ls s3://financial-transactions-dev-160885283918/transactions/
    ```
 
 5. **DynamoDB tem dados?**
+
    ```bash
    aws dynamodb scan --table-name customer-registration-dev --limit 5
    ```

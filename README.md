@@ -150,16 +150,19 @@ aws glue start-job-run --job-name financial-transaction-processor \
 ## 📚 Documentação Adicional
 
 ### Guias de Início Rápido
+
 - **[VISUAL_GUIDE.md](./VISUAL_GUIDE.md)** - 🎨 Guia visual do fluxo completo
 - **[FAQ.md](./FAQ.md)** - ❓ Perguntas frequentes com respostas diretas
 - **[JOB_EXECUTION.md](./JOB_EXECUTION.md)** - ▶️ Como executar o job Scala
 
 ### Setup e Deploy
+
 - **[SETUP_AWS.md](./SETUP_AWS.md)** - 🔑 Configuração de credenciais AWS
 - **[SCALA_DEPLOYMENT.md](./SCALA_DEPLOYMENT.md)** - 🚀 Deploy completo do job Scala
 - **[deploy-full.sh](./deploy-full.sh)** - 🤖 Script automatizado de deployment
 
 ### Documentação Técnica
+
 - **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - 🏗️ Arquitetura detalhada
 - **[docs/DEMO.md](./docs/DEMO.md)** - 🎬 Guia de demonstração
 - **[docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)** - 📦 Deployment detalhado
@@ -189,6 +192,7 @@ make destroy
 ## 🎯 Início Rápido (TL;DR)
 
 1. **Configurar AWS:**
+
    ```bash
    aws configure
    # Access Key: [SUA_ACCESS_KEY_AQUI]
@@ -197,11 +201,13 @@ make destroy
    ```
 
 2. **Deploy tudo:**
+
    ```bash
    ./deploy-full.sh
    ```
 
 3. **Gerar dados:**
+
    ```bash
    make generate-data
    ```

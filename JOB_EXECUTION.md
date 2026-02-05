@@ -21,6 +21,7 @@ cd /home/thiagohmm/Estudo/dryRun
 ```
 
 Este script faz **TUDO**:
+
 - ✅ Aplica infraestrutura Terraform
 - ✅ Compila o job Scala (sbt assembly)
 - ✅ Faz upload do JAR para S3
@@ -135,6 +136,7 @@ https://us-east-2.console.aws.amazon.com/glue/home?region=us-east-2#/v2/etl-conf
 ### Atualmente: Execução Manual
 
 O job só executa quando você dispara manualmente via:
+
 - AWS CLI: `aws glue start-job-run`
 - Console AWS: botão "Run job"
 - Makefile: `make run-glue`

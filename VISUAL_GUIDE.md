@@ -109,7 +109,7 @@
    • aws glue start-job-run
 
 📅 FUTURO (Configurável): Automático
-   
+
    Opção 1: Agendamento (Cron)
    ┌──────────────────────────────────────────┐
    │ Todos os dias às 2h da manhã             │
@@ -189,7 +189,7 @@ make destroy
    • S3: ~$0.50 (armazenamento inicial)
    • DynamoDB: ~$0 (on-demand, sem tráfego)
    • CloudWatch Logs: ~$1
-   
+
 💰 Por Execução do Job:
    • Glue G.1X (2 workers): $0.44/hora
    • Exemplo: Job de 10 min = ~$0.15

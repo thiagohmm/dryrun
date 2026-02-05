@@ -9,6 +9,7 @@ O job `FinancialTransactionProcessor.scala` é responsável por:
 3. **Gravar** dados enriquecidos no OpenSearch
 
 ### Características Técnicas:
+
 - Processamento em lote com MapPartitions
 - Batch-get no DynamoDB (max 100 itens/request)
 - Indexação em massa no OpenSearch
@@ -42,6 +43,7 @@ sbt clean assembly
 ```
 
 **Saída esperada:**
+
 ```
 [info] Built: /home/thiagohmm/Estudo/dryRun/glue-job/target/scala-2.12/financial-transaction-processor-assembly-1.0.jar
 ```
@@ -193,6 +195,7 @@ aws logs get-log-events \
 ## 🔄 Quando o Job será Executado?
 
 ### Execução Manual (Atual):
+
 - Via AWS CLI com `start-job-run`
 - Via Console AWS Glue
 - Via Makefile: `make run-glue`
