@@ -194,14 +194,15 @@ def upload_to_s3(
             # Cria chave S3 com a partição
             s3_key = f"{prefix}/{partition_key}/transactions_{uuid.uuid4().hex[:8]}.json"
 
-            # Converte para JSON
-            json_data = json.dumps(transactions, indent=2, ensure_ascii=False)
+            # Converte para JSON Lines (um objeto por linha, sem array)
+            json_lines = '\n'.join(json.dumps(txn, ensure_ascii=False)
+                                   for txn in transactions)
 
             # Envia para o S3
             s3_client.put_object(
                 Bucket=bucket_name,
                 Key=s3_key,
-                Body=json_data.encode('utf-8'),
+                Body=json_lines.encode('utf-8'),
                 ContentType='application/json'
             )
 

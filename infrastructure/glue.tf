@@ -160,13 +160,13 @@ resource "aws_glue_job" "financial_transaction_processor" {
 
   command {
     name            = "glueetl"
-    script_location = "s3://${aws_s3_bucket.glue_scripts.bucket}/scripts/placeholder.scala"
-    python_version  = "3"
+    script_location = "s3://${aws_s3_bucket.glue_scripts.bucket}/scripts/wrapper.scala"
   }
 
   default_arguments = {
     "--job-language"                     = "scala"
     "--class"                            = "FinancialTransactionProcessor"
+    "--user-jars-first"                  = "true"
     "--enable-metrics"                   = "true"
     "--enable-continuous-cloudwatch-log" = "true"
     "--enable-continuous-log-filter"     = "true"
@@ -174,6 +174,7 @@ resource "aws_glue_job" "financial_transaction_processor" {
     "--spark-event-logs-path"            = "s3://${aws_s3_bucket.glue_scripts.bucket}/spark-logs/"
     "--job-bookmark-option"              = "job-bookmark-disable"
     "--TempDir"                          = "s3://${aws_s3_bucket.glue_scripts.bucket}/temp/"
+    "--extra-jars"                       = "s3://${aws_s3_bucket.glue_scripts.bucket}/scripts/financial-transaction-processor_2.12-1.0.jar"
 
     # Parâmetros específicos do job (podem ser sobrescritos em tempo de execução)
     "--s3_bucket"           = aws_s3_bucket.transactions.bucket

@@ -96,6 +96,20 @@ variable "opensearch_allowed_ips" {
   default     = ["0.0.0.0/0"]
 }
 
+variable "opensearch_master_user" {
+  description = "Nome de usuário mestre do OpenSearch"
+  type        = string
+  default     = "admin"
+  sensitive   = true
+}
+
+variable "opensearch_master_password" {
+  description = "Senha do usuário mestre do OpenSearch (mínimo 8 caracteres, deve conter letras maiúsculas, minúsculas, números e símbolos)"
+  type        = string
+  default     = "Admin123!@#"
+  sensitive   = true
+}
+
 # Configuração do job Glue
 variable "glue_job_name" {
   description = "Nome do job Glue"

@@ -1,6 +1,7 @@
 # Bucket S3 para dados de transações
 resource "aws_s3_bucket" "transactions" {
   bucket = var.s3_transactions_bucket_name
+  force_destroy = true
 
   tags = merge(
     local.common_tags,
@@ -44,6 +45,7 @@ resource "aws_s3_bucket_public_access_block" "transactions" {
 # S3 Bucket for Glue Scripts
 resource "aws_s3_bucket" "glue_scripts" {
   bucket = var.s3_glue_scripts_bucket_name
+  force_destroy = true
 
   tags = merge(
     local.common_tags,

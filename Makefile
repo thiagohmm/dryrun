@@ -52,7 +52,7 @@ generate-data:
 	cd data-generation && python generate_transactions.py
 
 build-glue:
-	cd glue-job && sbt clean package
+	cd glue-job && sbt clean assembly
 
 deploy-glue: build-glue
 	@echo "Implantando JAR do job Glue no S3..."

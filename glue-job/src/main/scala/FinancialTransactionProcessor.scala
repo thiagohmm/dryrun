@@ -4,6 +4,7 @@ import enrichment.DynamoDBEnricher
 import models.{EnrichedTransaction, Transaction}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{Dataset, SparkSession}
+import org.apache.spark.sql.functions.{col, to_timestamp}
 import sink.OpenSearchSink
 import org.slf4j.LoggerFactory
 
@@ -127,8 +128,9 @@ object FinancialTransactionProcessor {
     // Lê arquivos JSON do S3
     val transactionsDF = spark.read
       .option("inferSchema", "true")
-      .option("timestampFormat", "yyyy-MM-dd'T'HH:mm:ss'Z'")
       .json(s3Path)
+      .withColumn("data_completa_transacao", 
+        to_timestamp(col("data_completa_transacao"), "yyyy-MM-dd'T'HH:mm:ss'Z'"))
     
     // Converte para Dataset para segurança de tipos
     val transactions: Dataset[Transaction] = transactionsDF.as[Transaction]

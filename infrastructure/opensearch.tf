@@ -40,10 +40,14 @@ resource "aws_opensearch_domain" "financial_transactions" {
     tls_security_policy = "Policy-Min-TLS-1-2-2019-07"
   }
 
-  # Advanced security options (optional - can be enabled for production)
+  # Advanced security options - HABILITADO (requerido pela AWS)
   advanced_security_options {
-    enabled                        = false
-    internal_user_database_enabled = false
+    enabled                        = true
+    internal_user_database_enabled = true
+    master_user_options {
+      master_user_name     = var.opensearch_master_user
+      master_user_password = var.opensearch_master_password
+    }
   }
 
   # Opções avançadas
@@ -52,7 +56,7 @@ resource "aws_opensearch_domain" "financial_transactions" {
     "override_main_response_version"         = "false"
   }
 
-  # Política de acesso para domínio público
+  # Política de acesso aberta (fine-grained access control gerencia permissões)
   access_policies = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -63,11 +67,6 @@ resource "aws_opensearch_domain" "financial_transactions" {
         }
         Action   = "es:*"
         Resource = "arn:aws:es:${local.region}:${local.account_id}:domain/${var.opensearch_domain_name}/*"
-        Condition = {
-          IpAddress = {
-            "aws:SourceIp" = var.opensearch_allowed_ips
-          }
-        }
       }
     ]
   })

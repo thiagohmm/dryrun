@@ -3,8 +3,8 @@
   "num_transactions": 1200,
   "start_date": "2024-01-01",
   "end_date": "2024-01-31",
-  "aws_region": "us-east-1",
+  "aws_region": "us-east-2",
   "dynamodb_table": "customer-registration-dev",
-  "s3_bucket": "financial-transactions-dev-12345",
+  "s3_bucket": "financial-transactions-dev-160885283918",
   "s3_prefix": "transactions"
 }

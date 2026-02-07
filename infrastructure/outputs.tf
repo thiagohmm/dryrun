@@ -56,6 +56,18 @@ output "opensearch_kibana_endpoint" {
   value       = aws_opensearch_domain.financial_transactions.dashboard_endpoint
 }
 
+output "opensearch_master_user" {
+  description = "Nome de usuário mestre do OpenSearch"
+  value       = var.opensearch_master_user
+  sensitive   = true
+}
+
+output "opensearch_master_password" {
+  description = "Senha do usuário mestre do OpenSearch"
+  value       = var.opensearch_master_password
+  sensitive   = true
+}
+
 # Outputs Glue
 output "glue_job_name" {
   description = "Nome do job Glue"
